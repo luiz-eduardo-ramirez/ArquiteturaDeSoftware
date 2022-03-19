@@ -71,7 +71,7 @@ Se o usuário selecionar o botão com um "x", ele é levado para a tela 1.
 
 <img src="FluxoDeTelas/Exportar_flashcard_Tela5.png">
 
-Ao carregar a tela 5, a aplicação irá carregar todos os *flashcards* de todos os grupos pertentes ao usuário (carregado do servidor).
+Ao carregar a tela 5, a aplicação irá carregar todos os *flashcards* de todos os grupos pertencentes ao usuário (carregado do servidor).
 
 Na tela 5, o usuário pode percorrer os *flashcards* utilizando as setas amarelas. 
 
