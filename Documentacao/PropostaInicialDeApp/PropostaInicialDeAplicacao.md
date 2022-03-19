@@ -14,7 +14,7 @@ Dentro dessa tela, o usuário pode selecionar uma das 4 opções:
 
 1. Sortear Flashcards leva o usuário para a tela 2
 2. Inserir/Remover *flashcard* leva o usuário para a tela 4
-3. Compatilhar Flashcard leva o usuário para a tela 5
+3. Compartilhar *flashcard* leva o usuário para a tela 5
 4. Sair fecha a aplicação
 
 ---
