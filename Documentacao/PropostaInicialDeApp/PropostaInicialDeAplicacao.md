@@ -12,7 +12,7 @@ O aplicativo é inciado e exibe a tela1:
 
 Dentro dessa tela, o usuário pode selecionar uma das 4 opções:
 
-1. Sotear Flashcards leva o usuário para a tela 2
+1. Sortear Flashcards leva o usuário para a tela 2
 2. Inserir/Remover Flashcard leva o usuário para a tela 4
 3. Compatilhar Flashcard leva o usuário para a tela 5
 4. Sair fecha a aplicação
