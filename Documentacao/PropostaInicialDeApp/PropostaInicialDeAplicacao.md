@@ -6,7 +6,7 @@ Abaixo segue uma descrição de como a equipe visualizou o funcionamento da apli
 
 ## Tela 1
 
-O aplicativo é inciado e exibe a tela1:
+O aplicativo é iniciado e exibe a tela 1:
 
 <img src="FluxoDeTelas/MenuPrincipal_Tela1.png">
 
