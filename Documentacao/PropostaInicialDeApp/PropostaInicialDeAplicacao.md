@@ -53,7 +53,7 @@ Se o usuário remover todos os *flashcards* da roleta, as alterações feitas po
 
 <img src="FluxoDeTelas/Inserir_Remover_Tela4.png">
 
-Ao carregar a tela 4, a aplicação irá carregar todos os *flashcards* de todos os grupos pertentes ao usuário (carregado do servidor).
+Ao carregar a tela 4, a aplicação irá carregar todos os *flashcards* de todos os grupos pertencentes ao usuário (carregado do servidor).
 
 Na tela 4, o usuário pode percorrer os *flashcards* utilizando as setas amarelas. 
 
