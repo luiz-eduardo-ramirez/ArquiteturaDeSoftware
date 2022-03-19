@@ -61,7 +61,7 @@ O usuário poderá também usar o botão de "360°" para virar o *flashcard*.
 
 O botão "Remover" pode ser usado para que o *flashcard* em questão seja removido da roleta, e conjunto geral de *flashcards* do usuário (removido do servidor). Se já não houverem mais *flashcards* para serem removidos, o botão não fará nada quando pressionado.
 
-O botão "Inserir" ao ser selecionado fará com que uma caixa de texto apareça para que o usuário digite o conteúdo da frente do *flashcard*. Ao preencher a caixa de texto, uma nova caixa de texto irá aparecer permitindo que o usuário preencha as informações do verso do *flashcard*. Após a segunda caixa de texto ser preenchida, o *flashcard* é salvo no grupo 1 do usuário (salvo no servidor). Caso o número de *flashcards* alcance um limite estabelecido, o botão não fará nada quando pressionado.
+O botão "Inserir" fará com que uma caixa de texto apareça para que o usuário digite o conteúdo da frente do *flashcard*. Ao preencher a caixa de texto, uma nova caixa de texto irá aparecer permitindo que o usuário preencha as informações do verso do *flashcard*. Após a segunda caixa de texto ser preenchida, o *flashcard* é salvo no grupo 1 do usuário (salvo no servidor). Caso o número de *flashcards* alcance um limite estabelecido, o botão não fará nada quando pressionado.
 
 Se o usuário selecionar o botão com um "x", ele é levado para a tela 1.
 
