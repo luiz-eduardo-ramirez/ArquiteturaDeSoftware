@@ -13,6 +13,13 @@ namespace ASLeitner.Managers
         [SerializeField]
         [ReadOnly]
         private DeckData m_playerDeck;
+        private FlashcardData[] m_ignorantStageCards;
+        private FlashcardData[] m_superficialStageCards;
+        private FlashcardData[] m_completeStageCards;
+
+        public const int ignorantStage = 0;
+        public const int superficialStage = 1;
+        public const int acquiredStage = 2;
 
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
         public DeckData PlayerDeck { get => m_playerDeck; }
@@ -23,6 +30,48 @@ namespace ASLeitner.Managers
             m_playerDeck = TryToDownloadDeckData();
 
             SceneManager.LoadScene(1);
+        }
+
+        private List<FlashcardData> SearchLearningStages(DeckData _deck, int _stage)
+        {
+            List<FlashcardData> ignorantStageList = new List<FlashcardData>();
+            List<FlashcardData> superficialStageList = new List<FlashcardData>();
+            List<FlashcardData> acquiredStageList = new List<FlashcardData>();
+            List<FlashcardData> errorList = new List<FlashcardData>();
+
+            foreach (FlashcardData flashcard in _deck.FlashCards)
+            {
+                switch (flashcard.LearningStage)
+                {
+                    case LearningStages.Ignorant:
+                        ignorantStageList.Add(flashcard);
+                        break;
+                    case LearningStages.Superficial:
+                        superficialStageList.Add(flashcard);
+                        break;
+                    case LearningStages.Acquired:
+                        acquiredStageList.Add(flashcard);
+                        break;
+
+                }
+            }
+
+            if(_stage == ignorantStage)
+            {
+                return ignorantStageList;
+            }
+            else if(_stage == superficialStage)
+            {
+                return superficialStageList;
+            }
+            else if(_stage == acquiredStage)
+            {
+                return acquiredStageList;
+            }
+            else
+            {
+                return errorList;
+            }
         }
 
         private DeckData TryToDownloadDeckData()
