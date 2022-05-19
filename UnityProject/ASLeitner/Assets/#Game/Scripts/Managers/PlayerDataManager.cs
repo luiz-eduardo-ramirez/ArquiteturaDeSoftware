@@ -17,9 +17,9 @@ namespace ASLeitner.Managers
         private FlashcardData[] m_superficialStageCards;
         private FlashcardData[] m_completeStageCards;
 
-        public const int ignorantStage = 0;
-        public const int superficialStage = 1;
-        public const int acquiredStage = 2;
+        private List<FlashcardData> ignorantStageList = new List<FlashcardData>();
+        private List<FlashcardData> superficialStageList = new List<FlashcardData>();
+        private List<FlashcardData> acquiredStageList = new List<FlashcardData>();
 
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
         public DeckData PlayerDeck { get => m_playerDeck; }
@@ -32,13 +32,8 @@ namespace ASLeitner.Managers
             SceneManager.LoadScene(1);
         }
 
-        private List<FlashcardData> SearchLearningStages(DeckData _deck, int _stage)
+        private void SearchLearningStages(DeckData _deck)
         {
-            List<FlashcardData> ignorantStageList = new List<FlashcardData>();
-            List<FlashcardData> superficialStageList = new List<FlashcardData>();
-            List<FlashcardData> acquiredStageList = new List<FlashcardData>();
-            List<FlashcardData> errorList = new List<FlashcardData>();
-
             foreach (FlashcardData flashcard in _deck.FlashCards)
             {
                 switch (flashcard.LearningStage)
@@ -52,26 +47,39 @@ namespace ASLeitner.Managers
                     case LearningStages.Acquired:
                         acquiredStageList.Add(flashcard);
                         break;
-
                 }
             }
+        }
 
-            if(_stage == ignorantStage)
+        public List<FlashcardData> ignorantStage()
+        {
+            return ignorantStageList;
+        }
+
+        public List<FlashcardData> superficialStage()
+        {
+            return superficialStageList;
+        }
+
+        public List<FlashcardData> acquiredStage()
+        {
+            return acquiredStageList;
+        }
+
+        // Apagar depois de fazer conexao com servidor
+        public DeckData createTestDeck()
+        {
+            DeckData deckTeste = new DeckData();
+            
+            for(int i = 0; i < 20; i++)
             {
-                return ignorantStageList;
+                deckTeste.FlashCards[i] = new FlashcardData();
+                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
+                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
+                deckTeste.FlashCards[i].LearningStage = LearningStages.Ignorant;
             }
-            else if(_stage == superficialStage)
-            {
-                return superficialStageList;
-            }
-            else if(_stage == acquiredStage)
-            {
-                return acquiredStageList;
-            }
-            else
-            {
-                return errorList;
-            }
+
+            return deckTeste;
         }
 
         private DeckData TryToDownloadDeckData()
