@@ -79,6 +79,22 @@ namespace ASLeitner.Managers
                 deckTeste.FlashCards[i].LearningStage = LearningStages.Ignorant;
             }
 
+            for (int i = 0; i < 20; i++)
+            {
+                deckTeste.FlashCards[i] = new FlashcardData();
+                deckTeste.FlashCards[i].CardFront = "abacateFront" + (20+i);
+                deckTeste.FlashCards[i].CardBack = "abacateBack" + (20+i);
+                deckTeste.FlashCards[i].LearningStage = LearningStages.Superficial;
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                deckTeste.FlashCards[i] = new FlashcardData();
+                deckTeste.FlashCards[i].CardFront = "abacateFront" + (40+i);
+                deckTeste.FlashCards[i].CardBack = "abacateBack" + (40+i);
+                deckTeste.FlashCards[i].LearningStage = LearningStages.Acquired;
+            }
+
             return deckTeste;
         }
 
