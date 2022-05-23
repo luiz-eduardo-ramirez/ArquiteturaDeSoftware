@@ -25,46 +25,86 @@ namespace ASLeitner.Managers
         {
             base.Awake();
 
-            m_playerDeck = TryToDownloadDeckData();
-
-            //SceneManager.LoadScene(1);
+            CheckUsrRegistry();
+        }
+        private void AdvanceToNextScene()
+        {
+            SceneManager.LoadScene(1);
         }
 
-        private IEnumerator RegisterUserOnServer()
+        private void RegisterUserOnServer(int _requests = 0)
         {
-            for (int i = 0; i < k_requestsLimit; i++)
-            {
-                StartCoroutine(ServerComs.SetUserDeckAsync(UserID, new DeckData(),
-                    (_result) => { if (_result == UnityWebRequest.Result.Success) i = k_requestsLimit; },
-                    (_progress) => Debug.Log("Uploading empty deck: " + (_progress * 100).ToString() + "%")
-                    ));
-            }
-        }
-
-
-        private DeckData TryToDownloadDeckData()
-        {
-            DeckData temp = null;
-
-            //Tenta baixar o deck do server
-            ServerComs.GetUserDeckAsync(UserID, 
-                (_deckData, _result) =>
+            StartCoroutine(ServerComs.SetUserDeckAsync(UserID, new DeckData(),
+                (_result) => 
                 {
-                    //Caso o processo de baixar o deck ocorra sem erros,
-                    //mas o deck continua nulo, o usuario ainda nao esta cadastrado
-                    if (_result == UnityWebRequest.Result.Success && _deckData == null)
+                    if (_result == UnityWebRequest.Result.Success)
                     {
-                        
+                        AdvanceToNextScene();
                     }
                     else
-                        temp = _deckData;
+                    {
+                        Debug.LogError("Nao foi possivel registrar o usuario");
+                        if (++_requests < k_requestsLimit) RegisterUserOnServer(_requests);
+                        else Application.Quit();
+                    }
+                },
+                (_progress) => Debug.Log("Uploading empty deck: " + (_progress * 100).ToString() + "%")
+                ));
+        }
+
+        private void CheckUsrRegistry()
+        {
+            StartCoroutine(ServerComs.GetUsersIdsAsync(
+                (_usrsIds, _result) =>
+                {
+                    bool usrIdFound = false;
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        if (_usrsIds != null)
+                        {
+                            for(int i = 0; i < _usrsIds.Length; i++)
+                            {
+                                if (_usrsIds[i] == UserID)
+                                {
+                                    usrIdFound = true;
+                                    TryToDownloadDeckData();
+                                    break;
+                                }
+                            }
+                        }
+                        if (!usrIdFound)
+                        {
+                            RegisterUserOnServer();
+                        }
+                    }
+                },
+                (_progress) =>
+                {
+                    Debug.Log("Downloading UsersIDs: " + (_progress * 100).ToString() + "%");
+                }));
+        }
+        private void TryToDownloadDeckData(int _requests = 0)
+        {
+            //Tenta baixar o deck do server
+            StartCoroutine(ServerComs.GetUserDeckAsync(UserID, 
+                (_deckData, _result) =>
+                {
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        m_playerDeck = _deckData;
+                        AdvanceToNextScene();
+                    }
+                    else
+                    {
+                        Debug.LogError("Nao foi possivel baixar o deck");
+                        if (++_requests < k_requestsLimit) TryToDownloadDeckData(_requests);
+                        else Application.Quit();
+                    }
                 },
                 (_progress) =>
                 {
                     Debug.Log("Downloading deck: " + (_progress * 100).ToString() + "%");
-                });
-
-            return temp;
+                }));
         }
     }
 }

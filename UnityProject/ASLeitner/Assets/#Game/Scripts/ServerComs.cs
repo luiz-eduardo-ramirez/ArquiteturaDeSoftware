@@ -23,9 +23,22 @@ namespace ASLeitner.Net
             }
         }
         [Serializable]
-        private class ServerGetReponse
+        private class PlayerDataGetReponse
         {
             public PlayerData Item;
+        }
+
+        [Serializable]
+        private class UsrsIdsGetResponse
+        {
+            [Serializable]
+            public class UsrId
+            { 
+                public string usrid;
+            }
+            public UsrId[] Items;
+            public int Count;
+            public int ScannedCount;
         }
         private const string s_servrUrl = "https://qc8uyffmda.execute-api.us-east-1.amazonaws.com/items";
 
@@ -53,7 +66,7 @@ namespace ASLeitner.Net
             {
                 downloadHan = getRequest.downloadHandler;
                 
-                deckData = JsonUtility.FromJson<ServerGetReponse>(downloadHan.text).Item.deck;
+                deckData = JsonUtility.FromJson<PlayerDataGetReponse>(downloadHan.text).Item.deck;
 
                 _onDownloadFinished(deckData, getRequest.result);
             }
@@ -80,7 +93,43 @@ namespace ASLeitner.Net
 
             _onUploadFinished(setRequest.result);
         }
+        public static IEnumerator GetUsersIdsAsync(Action<string[], UnityWebRequest.Result> _onDownloadFinished, Action<float> _onDownloadUpdate)
+        {
+            UnityWebRequest getRequest = UnityWebRequest.Get(s_servrUrl + "/usrsids");
+            UsrsIdsGetResponse usrsIdsResponse = null;
+            string[] usrsIds = null;
+            DownloadHandler downloadHan;
+            getRequest.SetRequestHeader("Content-Type", "application/json");
+            getRequest.SendWebRequest();
 
+
+
+            while (!getRequest.isDone)
+            {
+                _onDownloadUpdate(getRequest.downloadProgress);
+                yield return null;
+            }
+
+            if (getRequest.error != null)
+            {
+                Debug.LogError(getRequest.error);
+
+                _onDownloadFinished(usrsIds, getRequest.result);
+            }
+            else
+            {
+                downloadHan = getRequest.downloadHandler;
+
+                usrsIdsResponse = JsonUtility.FromJson<UsrsIdsGetResponse>(downloadHan.text);
+                usrsIds = new string[usrsIdsResponse.Count];
+                for (int i = 0; i < usrsIdsResponse.Count; i++)
+                {
+                    usrsIds[i] = usrsIdsResponse.Items[i].usrid;
+                }
+
+                _onDownloadFinished(usrsIds, getRequest.result);
+            }
+        }
         public static DeckData GetUsrDeck(MonoBehaviour _coroutineCaller, string _usrID)
         {
             DeckData deck = null;
