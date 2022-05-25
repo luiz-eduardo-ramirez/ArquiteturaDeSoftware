@@ -22,7 +22,8 @@ namespace ASLeitner.Managers
 
             m_playerDeck = TryToDownloadDeckData();
 
-            SceneManager.LoadScene(1);
+            if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
+                SceneManager.LoadScene(SceneRefs.MainMenu);
         }
 
         private DeckData TryToDownloadDeckData()
