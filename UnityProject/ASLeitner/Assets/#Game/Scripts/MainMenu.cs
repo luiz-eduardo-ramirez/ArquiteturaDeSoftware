@@ -11,14 +11,23 @@ namespace ASLeitner.Menu
         {
             if (CardQuantity >= 10)
             {
-                SceneManager.LoadScene("Sorting");
+                SceneManager.LoadScene(2);
                 Debug.Log("Sorteando flashcard!");
+            }
+        }
+
+        public void LearningStage()
+        {
+            if(CardQuantity >= 10)
+            {
+                SceneManager.LoadScene(3);
+                Debug.Log("Etapa de aprendizado!");
             }
         }
 
         public void InsertRemoveFlashcard()
         {
-            SceneManager.LoadScene("InsertRemove");
+            SceneManager.LoadScene(4);
             Debug.Log("Inserindo/removendo flashcard!"); 
         }
 
@@ -30,7 +39,7 @@ namespace ASLeitner.Menu
             }
             else
             {
-                SceneManager.LoadScene("Share");
+                SceneManager.LoadScene(4);
                 Debug.Log("Compartilhando flashcard!");
             }
         }

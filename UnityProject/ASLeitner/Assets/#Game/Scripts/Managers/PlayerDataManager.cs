@@ -27,9 +27,11 @@ namespace ASLeitner.Managers
         {
             base.Awake();
 
+            Debug.Log("Player data manager foi inicializado");
+
             m_playerDeck = TryToDownloadDeckData();
 
-            SceneManager.LoadScene(1);
+            //SceneManager.LoadScene(1);
         }
 
         private void SearchLearningStages(DeckData _deck)
@@ -51,25 +53,26 @@ namespace ASLeitner.Managers
             }
         }
 
-        public List<FlashcardData> ignorantStage()
+        public List<FlashcardData> IgnorantStage()
         {
             return ignorantStageList;
         }
 
-        public List<FlashcardData> superficialStage()
+        public List<FlashcardData> SuperficialStage()
         {
             return superficialStageList;
         }
 
-        public List<FlashcardData> acquiredStage()
+        public List<FlashcardData> AcquiredStage()
         {
             return acquiredStageList;
         }
 
         // Apagar depois de fazer conexao com servidor
-        public DeckData createTestDeck()
+        private DeckData CreateTestDeck()
         {
             DeckData deckTeste = new DeckData();
+            deckTeste.FlashCards = new FlashcardData[60];
             
             for(int i = 0; i < 20; i++)
             {
@@ -79,19 +82,19 @@ namespace ASLeitner.Managers
                 deckTeste.FlashCards[i].LearningStage = LearningStages.Ignorant;
             }
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 20; i < 40; i++)
             {
                 deckTeste.FlashCards[i] = new FlashcardData();
-                deckTeste.FlashCards[i].CardFront = "abacateFront" + (20+i);
-                deckTeste.FlashCards[i].CardBack = "abacateBack" + (20+i);
+                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
+                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
                 deckTeste.FlashCards[i].LearningStage = LearningStages.Superficial;
             }
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 40; i < 60; i++)
             {
                 deckTeste.FlashCards[i] = new FlashcardData();
-                deckTeste.FlashCards[i].CardFront = "abacateFront" + (40+i);
-                deckTeste.FlashCards[i].CardBack = "abacateBack" + (40+i);
+                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
+                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
                 deckTeste.FlashCards[i].LearningStage = LearningStages.Acquired;
             }
 
@@ -104,8 +107,8 @@ namespace ASLeitner.Managers
 
 
 
-
-            DeckData temp = new DeckData();
+            DeckData temp = CreateTestDeck();
+            //DeckData temp = new DeckData();
 
             //temp.FlashCards = new FlashcardData[10];
             //temp.FlashCards[0] = new FlashcardData();
