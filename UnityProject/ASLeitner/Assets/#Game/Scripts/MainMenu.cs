@@ -6,7 +6,7 @@ namespace ASLeitner.Menu
 {
     public class MainMenu : MonoBehaviour
     {
-        int CardQuantity { get => PlayerDataManager.Instance.PlayerDeck.DeckSize; }
+        int CardQuantity { get => PlayerDataManager.Instance.DeckSize; }
         public void SortFlashcard()
         {
             if (CardQuantity >= 10)

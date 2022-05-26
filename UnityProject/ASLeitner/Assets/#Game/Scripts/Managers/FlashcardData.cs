@@ -7,7 +7,7 @@ namespace ASLeitner.DataStructs
 {
     public enum LearningStages { Ignorant, Superficial, Acquired }
     [Serializable]
-    public class FlashcardData
+    public struct FlashcardData
     {
         public string CardFront;
         public string CardBack;

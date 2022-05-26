@@ -18,9 +18,7 @@ public class SortingMenu : MonoBehaviour
 
     private void CheckIgnoranceStage()
     {
-        DeckData deckTest = PlayerDataManager.Instance.PlayerDeck; //temporario para teste - substituir pelo server
-
-        int ignorantListSize = PlayerDataManager.Instance.IgnorantStage().Count;
+        int ignorantListSize = PlayerDataManager.Instance.IgnoranceList.Count;
         if(ignorantListSize == 0)
         {
             m_textWarning.gameObject.SetActive(true);
@@ -35,7 +33,7 @@ public class SortingMenu : MonoBehaviour
 
     public void CheckSuperficialStage()
     {
-        int superficialListSize = PlayerDataManager.Instance.SuperficialStage().Count;
+        int superficialListSize = PlayerDataManager.Instance.SuperficialList.Count;
         if (superficialListSize == 0)
         {
             m_textWarning.gameObject.SetActive(true);
@@ -50,7 +48,7 @@ public class SortingMenu : MonoBehaviour
 
     public void CheckAcquiredStage()
     {
-        int acquiredListSize = PlayerDataManager.Instance.AcquiredStage().Count;
+        int acquiredListSize = PlayerDataManager.Instance.AcquiredList.Count;
         if (acquiredListSize == 0)
         {
             m_textWarning.gameObject.SetActive(true);
