@@ -9,18 +9,21 @@ namespace ASLeitner
     public class MagicalRouletteCtrl : MonoBehaviour
     {
         [SerializeField]
+        private Flashcard m_flashcardPrefab;
+        [SerializeField]
         [Header("O X representa velocidade linear")]
         [Header("O Y representa velocidade da interpolacao")]
         private Vector2 m_animationSpeed;
         [SerializeField]
         private float m_rouletteRadius;
+
         private Flashcard[] m_flashcards;
         private bool m_isRotating;
         // Start is called before the first frame update
         void Start()
         {
             m_isRotating = false;
-            GetChildFlashcards();
+            InstantiateFlashcards();
             AssingFlashcardsPositions();
         }
 
@@ -44,14 +47,14 @@ namespace ASLeitner
             }
         }
 
-        private void GetChildFlashcards()
+        private void InstantiateFlashcards()
         {
-            int childCount = transform.childCount;
-            m_flashcards = new Flashcard[childCount];
+            int childCount = 6;
 
+            m_flashcards = new Flashcard[childCount];
             for (int i = 0; i < childCount; i++)
             {
-                m_flashcards[i] = transform.GetChild(i).GetComponent<Flashcard>();
+                m_flashcards[i] = Instantiate(m_flashcardPrefab, transform);
             }
         }
         private IEnumerator Animate(float _rotationAmount)
