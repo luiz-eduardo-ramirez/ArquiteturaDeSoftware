@@ -1,10 +1,12 @@
 using ASLeitner.DataStructs;
+using ASLeitner.Net;
 using Base.Extensions.Attributes;
 using Base.Extensions.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 namespace ASLeitner.Managers
@@ -23,6 +25,9 @@ namespace ASLeitner.Managers
         private DeckData m_playerDeck;
         private Dictionary<string, FlashcardData> m_playerDeckDict;
 
+        private const int k_requestsLimit = 4;
+
+
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
         //private DeckData PlayerDeck { get => m_playerDeck; }
         public int DeckSize { get => m_playerDeckDict.Count; }
@@ -32,12 +37,13 @@ namespace ASLeitner.Managers
             base.Awake();
 
             Debug.Log("Player data manager foi inicializado");
+            CheckUsrRegistry();
+            //m_playerDeck = CreateTestDeck();
+            //ResetFlashcards();
+            //SaveFlashcards(() => { });
 
-            m_playerDeck = TryToDownloadDeckData();
-            m_playerDeckDict = CreateFlashcardDictionary(m_playerDeck);
-
-            if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
-                SceneManager.LoadScene(SceneRefs.MainMenu);
+            //if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
+            //    SceneManager.LoadScene(SceneRefs.MainMenu);
         }
         public LearningSets GetLearningStagesSets()
         {
@@ -98,22 +104,80 @@ namespace ASLeitner.Managers
             return deckTeste;
         }
 
-        private DeckData TryToDownloadDeckData()
+        private void RegisterUserOnServer(int _requests = 0)
         {
-            //codigo maneiro de servidor
+            StartCoroutine(ServerComs.SetUserDeckAsync(UserID, new DeckData(),
+                (_result) => 
+                {
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        if (SceneManager.GetActiveScene().name == SceneRefs.Setup) SceneManager.LoadScene(SceneRefs.MainMenu);
+                    }
+                    else
+                    {
+                        Debug.LogError("Nao foi possivel registrar o usuario");
+                        if (++_requests < k_requestsLimit) RegisterUserOnServer(_requests);
+                        else Application.Quit();
+                    }
+                },
+                (_progress) => Debug.Log("Uploading empty deck: " + (_progress * 100).ToString() + "%")
+                ));
+        }
 
-
-
-            DeckData temp = CreateTestDeck();
-            //DeckData temp = new DeckData();
-
-            //temp.FlashCards = new FlashcardData[10];
-            //temp.FlashCards[0] = new FlashcardData();
-            //temp.FlashCards[0].CardFront = "Brasil";
-            //temp.FlashCards[0].CardBack = "Brasilia";
-            //temp.FlashCards[0].LearningStage = LearningStages.Ignorant;
-
-            return temp;
+        private void CheckUsrRegistry()
+        {
+            StartCoroutine(ServerComs.GetUsersIdsAsync(
+                (_usrsIds, _result) =>
+                {
+                    bool usrIdFound = false;
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        if (_usrsIds != null)
+                        {
+                            for(int i = 0; i < _usrsIds.Length; i++)
+                            {
+                                if (_usrsIds[i] == UserID)
+                                {
+                                    usrIdFound = true;
+                                    TryToDownloadDeckData();
+                                    break;
+                                }
+                            }
+                        }
+                        if (!usrIdFound)
+                        {
+                            RegisterUserOnServer();
+                        }
+                    }
+                },
+                (_progress) =>
+                {
+                    Debug.Log("Downloading UsersIDs: " + (_progress * 100).ToString() + "%");
+                }));
+        }
+        private void TryToDownloadDeckData(int _requests = 0)
+        {
+            //Tenta baixar o deck do server
+            StartCoroutine(ServerComs.GetUserDeckAsync(UserID, 
+                (_deckData, _result) =>
+                {
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        m_playerDeck = _deckData;
+                        m_playerDeckDict = CreateFlashcardDictionary(m_playerDeck);
+                        if(SceneManager.GetActiveScene().name == SceneRefs.Setup) SceneManager.LoadScene(SceneRefs.MainMenu);
+                    }
+                    else
+                    {
+                        Debug.LogError("Nao foi possivel baixar o deck");
+                        if (++_requests < k_requestsLimit) TryToDownloadDeckData(_requests);
+                        else Application.Quit();
+                    }
+                },
+                (_progress) =>
+                {
+                    Debug.Log("Downloading deck: " + (_progress * 100).ToString() + "%");
+                }));
         }
 
         private Dictionary<string, FlashcardData> CreateFlashcardDictionary(DeckData _deck)
@@ -170,7 +234,24 @@ namespace ASLeitner.Managers
         public void SaveFlashcards(Action _onUploadCompleted)
         {
             m_playerDeck = DictionaryToDeck(m_playerDeckDict);
-            _onUploadCompleted();
+
+            StartCoroutine(ServerComs.SetUserDeckAsync(UserID, m_playerDeck,
+                (_result) =>
+                {
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        _onUploadCompleted();
+                    }
+                    else
+                    {
+                        Debug.LogError("Nao foi possivel registrar o usuario");
+                        Application.Quit();
+                    }
+                },
+                (_progress) => Debug.Log("Uploading empty deck: " + (_progress * 100).ToString() + "%")
+                ));
+
+            
         }
         /// <summary>
         /// Reseta o dicionario de flashcards para a ultima versao baixada do server
