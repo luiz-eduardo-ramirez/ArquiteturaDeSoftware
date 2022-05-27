@@ -51,6 +51,7 @@ namespace ASLeitner
         }
         public void LearnFlashcard()
         {
+            if (m_rouletteCtrl.IsAnimating) return;
             FlashcardData flashcard = m_rouletteCtrl.HighlitedFlashcard.FlashcardData;
             LearningStages newStage = flashcard.LearningStage == LearningStages.Acquired ? LearningStages.Acquired : flashcard.LearningStage + 1;
             FlashcardData newFlashcard = new FlashcardData(flashcard.CardFront, flashcard.CardBack, newStage);
@@ -64,6 +65,7 @@ namespace ASLeitner
         }
         public void ForgetFlashcard()
         {
+            if (m_rouletteCtrl.IsAnimating) return;
             FlashcardData flashcard = m_rouletteCtrl.HighlitedFlashcard.FlashcardData;
             LearningStages newStage = LearningStages.Ignorant;
             FlashcardData newFlashcard = new FlashcardData(flashcard.CardFront, flashcard.CardBack, newStage);

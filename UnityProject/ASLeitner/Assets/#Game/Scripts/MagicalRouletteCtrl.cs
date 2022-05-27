@@ -33,20 +33,42 @@ namespace ASLeitner
         private bool m_isAnimating;
         private int m_highlightedFlashcardIndex;
         public Flashcard HighlitedFlashcard { get => m_flashcards[m_highlightedFlashcardIndex]; }
+        public bool IsAnimating { get => m_isAnimating; }
         // Start is called before the first frame update
         void Awake()
         {
             m_isAnimating = false;
             m_highlightedFlashcardIndex = -1;
         }
-        private void IncrementFlashcardIndex()
+        /// <summary>
+        /// Incrementa o indice e retorna a distancia para o proximo flashcard
+        /// </summary>
+        /// <returns>retorna a distancia de indices para o proximo flashcard</returns>
+        private int IncrementFlashcardIndex()
         {
-            m_highlightedFlashcardIndex = (m_highlightedFlashcardIndex + 1) % m_flashcards.Count;
+            int i = 0;
+            for (; i < m_flashcards.Count; i++)
+            {
+                m_highlightedFlashcardIndex = (m_highlightedFlashcardIndex + 1) % m_flashcards.Count;
+                if (HighlitedFlashcard.isActiveAndEnabled) break;
+            }
+
+            return i + 1;
         }
-        private void DecrementFlashcardIndex()
+        /// <summary>
+        /// Decrementa o indice e retorna a distancia para o proximo flashcard
+        /// </summary>
+        /// <returns>retorna a distancia de indices para o proximo flashcard</returns>
+        private int DecrementFlashcardIndex()
         {
-            m_highlightedFlashcardIndex--;
-            if (m_highlightedFlashcardIndex < 0) m_highlightedFlashcardIndex = m_flashcards.Count - 1;
+            int i = 0;
+            for (; i < m_flashcards.Count; i++)
+            {
+                m_highlightedFlashcardIndex--;
+                if (m_highlightedFlashcardIndex < 0) m_highlightedFlashcardIndex = m_flashcards.Count - 1;
+                if (HighlitedFlashcard.isActiveAndEnabled) break;
+            }
+            return i + 1;
         }
         private void AssingFlashcardsPositions()
         {
@@ -69,10 +91,16 @@ namespace ASLeitner
             m_isAnimating = true;
             Vector3 currentRotation = transform.rotation.eulerAngles;
             Vector3 desiredRotation = currentRotation;
+            int indexDiff;
 
-            if (_rotatingRight) angleFlashcards = -angleFlashcards;
+            if (_rotatingRight)
+                indexDiff = IncrementFlashcardIndex();
+            else
+                indexDiff = DecrementFlashcardIndex();
 
-            desiredRotation.y += angleFlashcards;
+            if (!_rotatingRight) angleFlashcards = -angleFlashcards;
+
+            desiredRotation.y += angleFlashcards * indexDiff;
 
             while (currentRotation.y != desiredRotation.y)
             {
@@ -80,11 +108,6 @@ namespace ASLeitner
                 transform.rotation = Quaternion.Euler(currentRotation);
                 yield return null;
             }
-
-            if (_rotatingRight)
-                DecrementFlashcardIndex();
-            else
-                IncrementFlashcardIndex();
 
 
             m_isAnimating = false;
@@ -124,15 +147,14 @@ namespace ASLeitner
             }
 
             HighlitedFlashcard.gameObject.SetActive(false);
-            m_flashcards.Remove(HighlitedFlashcard);
+            //m_flashcards.Remove(HighlitedFlashcard);
 
             if (m_flashcards.Count > 0)
-            {                
-                IncrementFlashcardIndex();
+            {
+                StartCoroutine(AnimateRoulette(true));
             }
-
-            m_isAnimating = false;
-
+            else
+                m_isAnimating = false;
         }
 
         public void InstantiateFlashcards(FlashcardData[] _flashcards)
@@ -158,10 +180,10 @@ namespace ASLeitner
                 if (!HighlitedFlashcard.ShowingTerm)
                 {
                     StartCoroutine(AnimateFlashcardRotation());
-                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(true)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
+                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(false)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
                 }
                 else
-                    StartCoroutine(AnimateRoulette(true));
+                    StartCoroutine(AnimateRoulette(false));
             }
         }
         public void AnimateRight()
@@ -171,10 +193,10 @@ namespace ASLeitner
                 if (!HighlitedFlashcard.ShowingTerm)
                 {
                     StartCoroutine(AnimateFlashcardRotation());
-                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(false)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
+                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(true)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
                 }
                 else
-                    StartCoroutine(AnimateRoulette(false));
+                    StartCoroutine(AnimateRoulette(true));
             }
         }
         public void RemoveHighlightedFlashcard()

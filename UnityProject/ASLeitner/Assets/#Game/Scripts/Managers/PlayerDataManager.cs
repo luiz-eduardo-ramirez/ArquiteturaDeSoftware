@@ -89,7 +89,7 @@ namespace ASLeitner.Managers
 
             for (int i = 40; i < 60; i++)
             {
-                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Superficial);
+                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Acquired);
             }
 
             return deckTeste;
