@@ -4,60 +4,78 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-
-public class SortingMenu : MonoBehaviour
+namespace ASLeitner
 {
-    [SerializeField]
-    private TextMeshProUGUI m_textWarning;
-
-    private void Start()
+    public class SortingMenu : MonoBehaviour
     {
-        m_textWarning.gameObject.SetActive(false);
-    }
+        [SerializeField]
+        private TextMeshProUGUI m_textWarning;
 
-    private void CheckIgnoranceStage()
-    {
-        int ignorantListSize = PlayerDataManager.Instance.IgnoranceList.Count;
-        if(ignorantListSize == 0)
+        private PlayerDataManager.LearningSets m_learningSets;
+
+        private void Awake()
         {
-            m_textWarning.gameObject.SetActive(true);
-            m_textWarning.text = "Voce nao possui flashcards!";
+            m_learningSets = PlayerDataManager.Instance.GetLearningStagesSets();
         }
-        else
+        private void Start()
         {
-            Debug.Log("Menu ignorancia inicializado");
             m_textWarning.gameObject.SetActive(false);
         }
-    }
 
-    public void CheckSuperficialStage()
-    {
-        int superficialListSize = PlayerDataManager.Instance.SuperficialList.Count;
-        if (superficialListSize == 0)
+        private void CheckIgnoranceStage()
         {
-            m_textWarning.gameObject.SetActive(true);
-            m_textWarning.text = "Voce nao possui flashcards!";
+            int ignorantListSize = m_learningSets.Ignorance.Count;
+            if (ignorantListSize == 0)
+            {
+                m_textWarning.gameObject.SetActive(true);
+                m_textWarning.text = "Voce nao possui flashcards!";
+            }
+            else
+            {
+                m_textWarning.gameObject.SetActive(false);
+                LearningCtrl.LearningSets = m_learningSets;
+                LearningCtrl.CurrentLearningStage = LearningStages.Ignorant;
+                SceneManager.LoadScene(SceneRefs.LearningStage);
+                Debug.Log("Menu ignorancia inicializado");
+            }
         }
-        else
-        {
-            Debug.Log("Menu superficial inicializado");
-            m_textWarning.gameObject.SetActive(false);
-        }
-    }
 
-    public void CheckAcquiredStage()
-    {
-        int acquiredListSize = PlayerDataManager.Instance.AcquiredList.Count;
-        if (acquiredListSize == 0)
+        public void CheckSuperficialStage()
         {
-            m_textWarning.gameObject.SetActive(true);
-            m_textWarning.text = "Voce nao possui flashcards!";
+            int superficialListSize = m_learningSets.Superficial.Count;
+            if (superficialListSize == 0)
+            {
+                m_textWarning.gameObject.SetActive(true);
+                m_textWarning.text = "Voce nao possui flashcards!";
+            }
+            else
+            {
+                m_textWarning.gameObject.SetActive(false);
+                LearningCtrl.LearningSets = m_learningSets;
+                LearningCtrl.CurrentLearningStage = LearningStages.Superficial;
+                SceneManager.LoadScene(SceneRefs.LearningStage);
+                Debug.Log("Menu superficial inicializado");
+            }
         }
-        else
+
+        public void CheckAcquiredStage()
         {
-            Debug.Log("Menu adquirido inicializado");
-            m_textWarning.gameObject.SetActive(false);
+            int acquiredListSize = m_learningSets.Acquired.Count;
+            if (acquiredListSize == 0)
+            {
+                m_textWarning.gameObject.SetActive(true);
+                m_textWarning.text = "Voce nao possui flashcards!";
+            }
+            else
+            {
+                m_textWarning.gameObject.SetActive(false);
+                LearningCtrl.LearningSets = m_learningSets;
+                LearningCtrl.CurrentLearningStage = LearningStages.Acquired;
+                SceneManager.LoadScene(SceneRefs.LearningStage);
+                Debug.Log("Menu adquirido inicializado");
+            }
         }
     }
 }

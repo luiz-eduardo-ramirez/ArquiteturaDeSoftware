@@ -1,8 +1,9 @@
 using ASLeitner.DataStructs;
 using Base.Extensions.Attributes;
 using Base.Extensions.Patterns;
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,21 +11,21 @@ namespace ASLeitner.Managers
 {
     public class PlayerDataManager : MonoSingleton<PlayerDataManager>
     {
+        public class LearningSets
+        {
+            public ReadOnlyCollection<FlashcardData> Ignorance;
+            public ReadOnlyCollection<FlashcardData> Superficial;
+            public ReadOnlyCollection<FlashcardData> Acquired;
+        }
+
         [SerializeField]
         [ReadOnly]
         private DeckData m_playerDeck;
-
-        private List<FlashcardData> m_ignorantStageList;
-        private List<FlashcardData> m_superficialStageList;
-        private List<FlashcardData> m_acquiredStageList;
         private Dictionary<string, FlashcardData> m_playerDeckDict;
 
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
         //private DeckData PlayerDeck { get => m_playerDeck; }
         public int DeckSize { get => m_playerDeckDict.Count; }
-        public List<FlashcardData> IgnoranceList { get => m_ignorantStageList; }
-        public List<FlashcardData> SuperficialList { get => m_ignorantStageList; }
-        public List<FlashcardData> AcquiredList { get => m_ignorantStageList; }
 
         protected override void Awake()
         {
@@ -38,28 +39,36 @@ namespace ASLeitner.Managers
             if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
                 SceneManager.LoadScene(SceneRefs.MainMenu);
         }
-
-        private void CreateLearningStagesSets(DeckData _deck)
+        public LearningSets GetLearningStagesSets()
         {
-            m_ignorantStageList = new List<FlashcardData>();
-            m_superficialStageList = new List<FlashcardData>();
-            m_acquiredStageList = new List<FlashcardData>();
+            LearningSets learningSets = new LearningSets();
+            List<FlashcardData> ignorance = new List<FlashcardData>();
+            List<FlashcardData> superficial = new List<FlashcardData>();
+            List<FlashcardData> acquired = new List<FlashcardData>();
 
-            foreach (FlashcardData flashcard in _deck.FlashCards)
+
+            foreach (FlashcardData flashcard in m_playerDeck.FlashCards)
             {
                 switch (flashcard.LearningStage)
                 {
                     case LearningStages.Ignorant:
-                        m_ignorantStageList.Add(flashcard);
+                        ignorance.Add(flashcard);
                         break;
                     case LearningStages.Superficial:
-                        m_superficialStageList.Add(flashcard);
+                        superficial.Add(flashcard);
                         break;
                     case LearningStages.Acquired:
-                        m_acquiredStageList.Add(flashcard);
+                        acquired.Add(flashcard);
                         break;
+                    default:
+                        throw new Exception("Estagio de aprendizado inexistente");
                 }
             }
+            learningSets.Ignorance = new ReadOnlyCollection<FlashcardData>(ignorance);
+            learningSets.Superficial = new ReadOnlyCollection<FlashcardData>(superficial);
+            learningSets.Acquired = new ReadOnlyCollection<FlashcardData>(acquired);
+
+            return learningSets;
         }
 
         // Apagar depois de fazer conexao com servidor
@@ -70,26 +79,17 @@ namespace ASLeitner.Managers
             
             for(int i = 0; i < 20; i++)
             {
-                deckTeste.FlashCards[i] = new FlashcardData();
-                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
-                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
-                deckTeste.FlashCards[i].LearningStage = LearningStages.Ignorant;
+                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Ignorant);
             }
 
             for (int i = 20; i < 40; i++)
             {
-                deckTeste.FlashCards[i] = new FlashcardData();
-                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
-                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
-                deckTeste.FlashCards[i].LearningStage = LearningStages.Superficial;
+                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Superficial);
             }
 
             for (int i = 40; i < 60; i++)
             {
-                deckTeste.FlashCards[i] = new FlashcardData();
-                deckTeste.FlashCards[i].CardFront = "abacateFront" + i;
-                deckTeste.FlashCards[i].CardBack = "abacateBack" + i;
-                deckTeste.FlashCards[i].LearningStage = LearningStages.Acquired;
+                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Superficial);
             }
 
             return deckTeste;
@@ -126,6 +126,21 @@ namespace ASLeitner.Managers
             return flashcardDict;
         }
 
+        private DeckData DictionaryToDeck(Dictionary<string, FlashcardData> _dict)
+        {
+            DeckData deckData = new DeckData();
+            deckData.FlashCards = new FlashcardData[_dict.Count];
+
+            int i = 0;
+            foreach (KeyValuePair<string, FlashcardData> keyValue in _dict)
+            {
+                deckData.FlashCards[i] = keyValue.Value;
+                i++;
+            }
+
+            return deckData;
+        }
+
         public void SetFlashcard(string _oldKey, FlashcardData _flashcard)
         {
             m_playerDeckDict.Remove(_oldKey);
@@ -145,6 +160,22 @@ namespace ASLeitner.Managers
         public void DeleteFlashcard(string _key)
         {
             m_playerDeckDict.Remove(_key);
+        }
+        /// <summary>
+        /// Faz upload do baralho para o server
+        /// </summary>
+        public void SaveFlashcards(Action _onUploadCompleted)
+        {
+            m_playerDeck = DictionaryToDeck(m_playerDeckDict);
+            _onUploadCompleted();
+        }
+        /// <summary>
+        /// Reseta o dicionario de flashcards para a ultima versao baixada do server
+        /// </summary>
+        public void ResetFlashcards()
+        {
+            m_playerDeckDict = CreateFlashcardDictionary(m_playerDeck);
+
         }
     }
 }

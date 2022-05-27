@@ -21,7 +21,7 @@ namespace Base.Extensions.Patterns
                 if (s_instance == null)
                 {
                     Debug.LogWarning("Nenhuma instancia do objeto encontrada, instanciando novo objeto...");
-                    s_instance = Instantiate(new GameObject("PlayerDataManager")).AddComponent<SingletonClass>();
+                    s_instance = new GameObject(typeof(SingletonClass).Name).AddComponent<SingletonClass>();
                 }
                 return s_instance;
             }
