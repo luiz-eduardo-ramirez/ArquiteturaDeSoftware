@@ -26,6 +26,7 @@ namespace ASLeitner.Managers
         private Dictionary<string, FlashcardData> m_playerDeckDict;
 
         private const int k_requestsLimit = 4;
+        private const int k_maxNumOfFlashcards = 50;
 
 
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
@@ -44,37 +45,6 @@ namespace ASLeitner.Managers
 
             //if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
             //    SceneManager.LoadScene(SceneRefs.MainMenu);
-        }
-        public LearningSets GetLearningStagesSets()
-        {
-            LearningSets learningSets = new LearningSets();
-            List<FlashcardData> ignorance = new List<FlashcardData>();
-            List<FlashcardData> superficial = new List<FlashcardData>();
-            List<FlashcardData> acquired = new List<FlashcardData>();
-
-
-            foreach (FlashcardData flashcard in m_playerDeck.FlashCards)
-            {
-                switch (flashcard.LearningStage)
-                {
-                    case LearningStages.Ignorant:
-                        ignorance.Add(flashcard);
-                        break;
-                    case LearningStages.Superficial:
-                        superficial.Add(flashcard);
-                        break;
-                    case LearningStages.Acquired:
-                        acquired.Add(flashcard);
-                        break;
-                    default:
-                        throw new Exception("Estagio de aprendizado inexistente");
-                }
-            }
-            learningSets.Ignorance = new ReadOnlyCollection<FlashcardData>(ignorance);
-            learningSets.Superficial = new ReadOnlyCollection<FlashcardData>(superficial);
-            learningSets.Acquired = new ReadOnlyCollection<FlashcardData>(acquired);
-
-            return learningSets;
         }
 
         // Apagar depois de fazer conexao com servidor
@@ -207,7 +177,52 @@ namespace ASLeitner.Managers
 
             return deckData;
         }
+        public string GetAvailableDefaultKey()
+        {
+            string candidateKey = "Termo";
+            for (int i = 1; i <= k_maxNumOfFlashcards; i++)
+            {
+                candidateKey = "Termo " + i.ToString();
+                if (!m_playerDeckDict.ContainsKey(candidateKey)) break;
+            }
 
+            return candidateKey;
+        }
+        public LearningSets GetLearningStagesSets()
+        {
+            LearningSets learningSets = new LearningSets();
+            List<FlashcardData> ignorance = new List<FlashcardData>();
+            List<FlashcardData> superficial = new List<FlashcardData>();
+            List<FlashcardData> acquired = new List<FlashcardData>();
+
+
+            foreach (FlashcardData flashcard in m_playerDeck.FlashCards)
+            {
+                switch (flashcard.LearningStage)
+                {
+                    case LearningStages.Ignorant:
+                        ignorance.Add(flashcard);
+                        break;
+                    case LearningStages.Superficial:
+                        superficial.Add(flashcard);
+                        break;
+                    case LearningStages.Acquired:
+                        acquired.Add(flashcard);
+                        break;
+                    default:
+                        throw new Exception("Estagio de aprendizado inexistente");
+                }
+            }
+            learningSets.Ignorance = new ReadOnlyCollection<FlashcardData>(ignorance);
+            learningSets.Superficial = new ReadOnlyCollection<FlashcardData>(superficial);
+            learningSets.Acquired = new ReadOnlyCollection<FlashcardData>(acquired);
+
+            return learningSets;
+        }
+        public FlashcardData[] PlayerDeckToArray()
+        {
+            return DictionaryToDeck(m_playerDeckDict).FlashCards;
+        }
         public void SetFlashcard(string _oldKey, FlashcardData _flashcard)
         {
             m_playerDeckDict.Remove(_oldKey);

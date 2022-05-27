@@ -490,8 +490,8 @@ MonoBehaviour:
   m_rotationAnimationSpeed: {x: 8, y: 3}
   m_distanceFromCam: 9.5
   m_flashcardsSpacing: 6
-  m_deletetionAnimationSpeed: {x: 8, y: 3}
-  m_flashCardExitHeight: 20
+  m_translationAnimationSpeed: {x: 6, y: 2}
+  m_flashCardExitHeight: 10
 --- !u!1 &489057219
 GameObject:
   m_ObjectHideFlags: 0

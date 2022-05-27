@@ -15,6 +15,8 @@ namespace ASLeitner.DataStructs
 
         public FlashcardData(string _cardFront, string _cardBack, LearningStages _learningStage)
         {
+            if (_cardFront.Length > 120) throw new Exception("Termo com caracteres em excesso");
+            if (_cardBack.Length > 430) throw new Exception("Definicao com caracteres em excesso");
             m_cardFront = _cardFront;
             m_cardBack = _cardBack;
             m_learningStage = _learningStage;
