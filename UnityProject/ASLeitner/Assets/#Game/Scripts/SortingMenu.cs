@@ -35,8 +35,8 @@ namespace ASLeitner
             else
             {
                 m_textWarning.gameObject.SetActive(false);
-                LearningCtrl.LearningSets = m_learningSets;
-                LearningCtrl.CurrentLearningStage = LearningStages.Ignorant;
+                LearningMenu.LearningSets = m_learningSets;
+                LearningMenu.CurrentLearningStage = LearningStages.Ignorant;
                 SceneManager.LoadScene(SceneRefs.LearningStage);
                 Debug.Log("Menu ignorancia inicializado");
             }
@@ -53,8 +53,8 @@ namespace ASLeitner
             else
             {
                 m_textWarning.gameObject.SetActive(false);
-                LearningCtrl.LearningSets = m_learningSets;
-                LearningCtrl.CurrentLearningStage = LearningStages.Superficial;
+                LearningMenu.LearningSets = m_learningSets;
+                LearningMenu.CurrentLearningStage = LearningStages.Superficial;
                 SceneManager.LoadScene(SceneRefs.LearningStage);
                 Debug.Log("Menu superficial inicializado");
             }
@@ -71,8 +71,8 @@ namespace ASLeitner
             else
             {
                 m_textWarning.gameObject.SetActive(false);
-                LearningCtrl.LearningSets = m_learningSets;
-                LearningCtrl.CurrentLearningStage = LearningStages.Acquired;
+                LearningMenu.LearningSets = m_learningSets;
+                LearningMenu.CurrentLearningStage = LearningStages.Acquired;
                 SceneManager.LoadScene(SceneRefs.LearningStage);
                 Debug.Log("Menu adquirido inicializado");
             }

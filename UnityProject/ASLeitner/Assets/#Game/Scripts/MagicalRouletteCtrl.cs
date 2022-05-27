@@ -1,3 +1,4 @@
+using ASLeitner.DataStructs;
 using Base.Extensions.Utilites;
 using Base.Managers;
 using System;
@@ -11,8 +12,6 @@ namespace ASLeitner
     {
         [SerializeField]
         private Flashcard m_flashcardPrefab;
-        [SerializeField]
-        private LearningCtrl m_learningCtrl;
         [SerializeField]
         [Header("O X representa velocidade linear")]
         [Header("O Y representa velocidade da interpolacao")]
@@ -33,25 +32,12 @@ namespace ASLeitner
         private List<Flashcard> m_flashcards;
         private bool m_isAnimating;
         private int m_highlightedFlashcardIndex;
-        private Flashcard HighlitedFlashcard { get => m_flashcards[m_highlightedFlashcardIndex]; }
+        public Flashcard HighlitedFlashcard { get => m_flashcards[m_highlightedFlashcardIndex]; }
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             m_isAnimating = false;
             m_highlightedFlashcardIndex = -1;
-            InstantiateFlashcards();
-            AssingFlashcardsPositions();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space)) 
-                AnimateRight();
-        }
-        private void OnAllFlashcardsRemoved()
-        {
-            m_learningCtrl.OnAllFlashcardsLearned();
         }
         private void IncrementFlashcardIndex()
         {
@@ -75,22 +61,6 @@ namespace ASLeitner
             {
                 m_flashcards[i].transform.position = new Vector3(flashCardPos.x, 0, flashCardPos.y) + transform.position;
                 flashCardPos = Vec2Uts.RotateVec2(flashCardPos, angleFlashcards);
-            }
-        }
-
-        private void InstantiateFlashcards()
-        {
-            Flashcard newFlashcard;
-            int childCount = m_learningCtrl.LearningStageFlashcards.Count;
-
-            m_flashcards = new List<Flashcard>();
-            m_highlightedFlashcardIndex = 0;
-            for (int i = 0; i < childCount; i++)
-            {
-                newFlashcard = Instantiate(m_flashcardPrefab, transform);
-                newFlashcard.LookForward = true;
-                newFlashcard.SetFlashCard(m_learningCtrl.LearningStageFlashcards[i]);
-                m_flashcards.Add(newFlashcard);
             }
         }
         private IEnumerator AnimateRoulette(bool _rotatingRight)
@@ -157,12 +127,29 @@ namespace ASLeitner
             m_flashcards.Remove(HighlitedFlashcard);
 
             if (m_flashcards.Count > 0)
+            {                
                 IncrementFlashcardIndex();
-            else
-                OnAllFlashcardsRemoved();
+            }
 
             m_isAnimating = false;
 
+        }
+
+        public void InstantiateFlashcards(FlashcardData[] _flashcards)
+        {
+            Flashcard newFlashcard;
+            int childCount = _flashcards.Length;
+
+            m_flashcards = new List<Flashcard>();
+            m_highlightedFlashcardIndex = 0;
+            for (int i = 0; i < childCount; i++)
+            {
+                newFlashcard = Instantiate(m_flashcardPrefab, transform);
+                newFlashcard.LookForward = true;
+                newFlashcard.SetFlashCard(_flashcards[i]);
+                m_flashcards.Add(newFlashcard);
+            }
+            AssingFlashcardsPositions();
         }
         public void AnimateLeft()
         {
@@ -190,7 +177,7 @@ namespace ASLeitner
                     StartCoroutine(AnimateRoulette(false));
             }
         }
-        public void RemoveCurrentFlashcard()
+        public void RemoveHighlightedFlashcard()
         {
             if (!m_isAnimating)
             {

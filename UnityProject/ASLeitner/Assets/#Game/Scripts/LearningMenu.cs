@@ -5,20 +5,26 @@ using UnityEngine;
 using ASLeitner.DataStructs;
 using ASLeitner.Managers;
 using System;
+using System.Linq;
 
 namespace ASLeitner
 {
-    public class LearningCtrl : MonoBehaviour
+    public class LearningMenu : MonoBehaviour
     {
         public static LearningStages CurrentLearningStage { private get; set; }
         public static PlayerDataManager.LearningSets LearningSets { private get; set; }
 
+        [SerializeField] private MagicalRouletteCtrl m_rouletteCtrl;
+
         private List<FlashcardData> m_learningStageFlashcards;
 
-        public List<FlashcardData> LearningStageFlashcards { get => m_learningStageFlashcards; }
         private void Awake()
         {
             BuildLearningDeck();
+        }
+        private void Start()
+        {
+            m_rouletteCtrl.InstantiateFlashcards(m_learningStageFlashcards.ToArray());
         }
         private void BuildLearningDeck()
         {
@@ -41,19 +47,33 @@ namespace ASLeitner
                 default:
                     throw new Exception("Estagio de aprendizado inexistente");
             }
+            m_learningStageFlashcards = m_learningStageFlashcards.OrderBy(flashCard => new System.Random().Next()).ToList();        
         }
-        public void LearnFlashcard(FlashcardData _flashCard)
+        public void LearnFlashcard()
         {
-            LearningStages newStage = _flashCard.LearningStage == LearningStages.Acquired ? LearningStages.Acquired : _flashCard.LearningStage + 1;
-            FlashcardData newFlashcard = new FlashcardData(_flashCard.CardFront, _flashCard.CardBack, newStage);
-            PlayerDataManager.Instance.SetFlashcard(_flashCard.CardFront, newFlashcard);
-        }
-        public void ForgetFlashcard(FlashcardData _flashCard)
-        {
-            LearningStages newStage = LearningStages.Ignorant;
-            FlashcardData newFlashcard = new FlashcardData(_flashCard.CardFront, _flashCard.CardBack, newStage);
-            PlayerDataManager.Instance.SetFlashcard(_flashCard.CardFront, newFlashcard);
+            FlashcardData flashcard = m_rouletteCtrl.HighlitedFlashcard.FlashcardData;
+            LearningStages newStage = flashcard.LearningStage == LearningStages.Acquired ? LearningStages.Acquired : flashcard.LearningStage + 1;
+            FlashcardData newFlashcard = new FlashcardData(flashcard.CardFront, flashcard.CardBack, newStage);
 
+            PlayerDataManager.Instance.SetFlashcard(flashcard.CardFront, newFlashcard);
+
+            m_learningStageFlashcards.Remove(flashcard);
+            m_rouletteCtrl.RemoveHighlightedFlashcard();
+
+            if (m_learningStageFlashcards.Count == 0) OnAllFlashcardsLearned();
+        }
+        public void ForgetFlashcard()
+        {
+            FlashcardData flashcard = m_rouletteCtrl.HighlitedFlashcard.FlashcardData;
+            LearningStages newStage = LearningStages.Ignorant;
+            FlashcardData newFlashcard = new FlashcardData(flashcard.CardFront, flashcard.CardBack, newStage);
+
+            PlayerDataManager.Instance.SetFlashcard(flashcard.CardFront, newFlashcard);
+
+            m_learningStageFlashcards.Remove(flashcard);
+            m_rouletteCtrl.RemoveHighlightedFlashcard();
+
+            if (m_learningStageFlashcards.Count == 0) OnAllFlashcardsLearned();
         }
         public void BackToMainMenu()
         {

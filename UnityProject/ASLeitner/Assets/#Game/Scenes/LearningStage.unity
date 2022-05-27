@@ -345,7 +345,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -178, y: 67}
+  m_AnchoredPosition: {x: -178, y: 32}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &446097776
@@ -391,7 +391,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 446097777}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 943197967}
+        m_TargetAssemblyTypeName: ASLeitner.LearningMenu, Assembly-CSharp
+        m_MethodName: LearnFlashcard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &446097777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,11 +487,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_flashcardPrefab: {fileID: 6280173916510479775, guid: 69bb0c93eda756c47b651cdcb599ee65, type: 3}
-  m_learningCtrl: {fileID: 943197967}
-  m_rotationAnimationSpeed: {x: 0.06, y: 0.03}
+  m_rotationAnimationSpeed: {x: 8, y: 3}
   m_distanceFromCam: 9.5
   m_flashcardsSpacing: 6
-  m_deletetionAnimationSpeed: {x: 0.06, y: 0.03}
+  m_deletetionAnimationSpeed: {x: 8, y: 3}
   m_flashCardExitHeight: 20
 --- !u!1 &489057219
 GameObject:
@@ -1135,9 +1146,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 943197962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94eac3c8554960e488aee99db0aaaec1, type: 3}
+  m_Script: {fileID: 11500000, guid: 52c56f7ed002f574b9f102b3185b30f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rouletteCtrl: {fileID: 451926855}
 --- !u!1 &1154731389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,7 +1187,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 178, y: 67}
+  m_AnchoredPosition: {x: 178, y: 32}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1154731391
@@ -1221,7 +1233,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1154731392}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 943197967}
+        m_TargetAssemblyTypeName: ASLeitner.LearningMenu, Assembly-CSharp
+        m_MethodName: ForgetFlashcard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1154731392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1595,7 +1619,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 943197967}
-        m_TargetAssemblyTypeName: ASLeitner.LearningCtrl, Assembly-CSharp
+        m_TargetAssemblyTypeName: ASLeitner.LearningMenu, Assembly-CSharp
         m_MethodName: BackToMainMenu
         m_Mode: 1
         m_Arguments:
