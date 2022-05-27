@@ -26,10 +26,9 @@ namespace ASLeitner.Managers
             base.Awake();
 
             CheckUsrRegistry();
-        }
-        private void AdvanceToNextScene()
-        {
-            SceneManager.LoadScene(1);
+
+            if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
+                SceneManager.LoadScene(SceneRefs.MainMenu);
         }
 
         private void RegisterUserOnServer(int _requests = 0)
