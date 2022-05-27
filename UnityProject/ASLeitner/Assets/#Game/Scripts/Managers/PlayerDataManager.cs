@@ -75,22 +75,25 @@ namespace ASLeitner.Managers
         private DeckData CreateTestDeck()
         {
             DeckData deckTeste = new DeckData();
-            deckTeste.FlashCards = new FlashcardData[60];
-            
-            for(int i = 0; i < 20; i++)
+            deckTeste.FlashCards = new FlashcardData[10];
+            for (int i = 0; i < 10; i++)
             {
                 deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Ignorant);
             }
-
-            for (int i = 20; i < 40; i++)
-            {
-                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Superficial);
-            }
-
-            for (int i = 40; i < 60; i++)
-            {
-                deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Acquired);
-            }
+            //for(int i = 0; i < 20; i++)
+            //{
+            //    deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Ignorant);
+            //}
+            //
+            //for (int i = 20; i < 40; i++)
+            //{
+            //    deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Superficial);
+            //}
+            //
+            //for (int i = 40; i < 60; i++)
+            //{
+            //    deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Acquired);
+            //}
 
             return deckTeste;
         }

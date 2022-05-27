@@ -147,7 +147,6 @@ namespace ASLeitner
             }
 
             HighlitedFlashcard.gameObject.SetActive(false);
-            //m_flashcards.Remove(HighlitedFlashcard);
 
             if (m_flashcards.Count > 0)
             {

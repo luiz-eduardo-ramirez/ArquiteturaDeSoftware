@@ -6,6 +6,7 @@ using ASLeitner.DataStructs;
 using ASLeitner.Managers;
 using System;
 using System.Linq;
+using Base.Managers;
 
 namespace ASLeitner
 {
@@ -15,6 +16,7 @@ namespace ASLeitner
         public static PlayerDataManager.LearningSets LearningSets { private get; set; }
 
         [SerializeField] private MagicalRouletteCtrl m_rouletteCtrl;
+        [SerializeField] private GameObject m_inputAbsorver;
 
         private List<FlashcardData> m_learningStageFlashcards;
 
@@ -61,7 +63,8 @@ namespace ASLeitner
             m_learningStageFlashcards.Remove(flashcard);
             m_rouletteCtrl.RemoveHighlightedFlashcard();
 
-            if (m_learningStageFlashcards.Count == 0) OnAllFlashcardsLearned();
+            if (m_learningStageFlashcards.Count == 0)
+                TimersManager.CallAfterConditionIsTrue(OnAllFlashcardsLearned, () => !m_rouletteCtrl.IsAnimating);
         }
         public void ForgetFlashcard()
         {
@@ -75,14 +78,17 @@ namespace ASLeitner
             m_learningStageFlashcards.Remove(flashcard);
             m_rouletteCtrl.RemoveHighlightedFlashcard();
 
-            if (m_learningStageFlashcards.Count == 0) OnAllFlashcardsLearned();
+            if (m_learningStageFlashcards.Count == 0)
+                TimersManager.CallAfterConditionIsTrue(OnAllFlashcardsLearned, () => !m_rouletteCtrl.IsAnimating);
         }
         public void BackToMainMenu()
         {
+            PlayerDataManager.Instance.ResetFlashcards();
             SceneManager.LoadScene(SceneRefs.MainMenu);
         }
         public void OnAllFlashcardsLearned()
         {
+            m_inputAbsorver.SetActive(true);
             PlayerDataManager.Instance.SaveFlashcards(() => SceneManager.LoadScene(SceneRefs.MainMenu));            
         }
     }
