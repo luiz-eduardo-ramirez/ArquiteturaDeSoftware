@@ -7,6 +7,7 @@ using ASLeitner.Managers;
 using System;
 using System.Linq;
 using Base.Managers;
+using TMPro;
 
 namespace ASLeitner
 {
@@ -15,10 +16,17 @@ namespace ASLeitner
         public static LearningStages CurrentLearningStage { private get; set; }
         public static PlayerDataManager.LearningSets LearningSets { private get; set; }
 
+        [SerializeField] private TextMeshProUGUI m_correctGuesses;
+        [SerializeField] private TextMeshProUGUI m_incorrectGuesses;
+        [SerializeField] private TextMeshProUGUI m_correctGuessesHeader;
+        [SerializeField] private TextMeshProUGUI m_incorrectGuessesHeader;
         [SerializeField] private MagicalRouletteCtrl m_rouletteCtrl;
         [SerializeField] private GameObject m_inputAbsorver;
 
         private List<FlashcardData> m_learningStageFlashcards;
+
+        private int m_numOfCorrectGuesses;
+        private int m_numOfIncorrectGuesses;
 
         private void Awake()
         {
@@ -27,6 +35,10 @@ namespace ASLeitner
         private void Start()
         {
             m_rouletteCtrl.InstantiateFlashcards(m_learningStageFlashcards.ToArray());
+            m_correctGuessesHeader.gameObject.SetActive(false);
+            m_incorrectGuessesHeader.gameObject.SetActive(false);
+            m_numOfCorrectGuesses = 0;
+            m_numOfIncorrectGuesses = 0;
         }
         private void BuildLearningDeck()
         {
@@ -60,6 +72,7 @@ namespace ASLeitner
 
             PlayerDataManager.Instance.SetFlashcard(flashcard.CardFront, newFlashcard);
 
+            m_numOfCorrectGuesses++;
             m_learningStageFlashcards.Remove(flashcard);
             m_rouletteCtrl.RemoveHighlightedFlashcard();
 
@@ -75,6 +88,7 @@ namespace ASLeitner
 
             PlayerDataManager.Instance.SetFlashcard(flashcard.CardFront, newFlashcard);
 
+            m_numOfIncorrectGuesses++;
             m_learningStageFlashcards.Remove(flashcard);
             m_rouletteCtrl.RemoveHighlightedFlashcard();
 
@@ -89,7 +103,14 @@ namespace ASLeitner
         public void OnAllFlashcardsLearned()
         {
             m_inputAbsorver.SetActive(true);
-            PlayerDataManager.Instance.SaveFlashcards(() => SceneManager.LoadScene(SceneRefs.MainMenu));            
+            m_correctGuessesHeader.gameObject.SetActive(true);
+            m_incorrectGuessesHeader.gameObject.SetActive(true);
+            m_correctGuesses.text = m_numOfCorrectGuesses.ToString();
+            m_incorrectGuesses.text = m_numOfIncorrectGuesses.ToString();
+            PlayerDataManager.Instance.SaveFlashcards(() =>
+            {
+                TimersManager.CallAfterTime(() => SceneManager.LoadScene(SceneRefs.MainMenu), 3.5f);
+            });            
         }
     }
 }
