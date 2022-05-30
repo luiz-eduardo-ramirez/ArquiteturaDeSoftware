@@ -28,7 +28,7 @@ namespace ASLeitner
             {
                 m_onDeckSharingFail.SetActive(false);
                 m_onDeckSharingSuccess.SetActive(true);
-                TimersManager.CallAfterTime(DeactivateSharingMenu, 3);
+                PlayerDataManager.Instance.SaveFlashcards(() => TimersManager.CallAfterTime(DeactivateSharingMenu, 1.5f));                
             }
             else
             {
