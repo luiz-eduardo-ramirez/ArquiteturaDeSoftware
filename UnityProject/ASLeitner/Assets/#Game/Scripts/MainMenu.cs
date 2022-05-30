@@ -1,4 +1,5 @@
 using ASLeitner.Managers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,7 +7,13 @@ namespace ASLeitner.Menu
 {
     public class MainMenu : MonoBehaviour
     {
+        [SerializeField] private TextMeshProUGUI m_usrId;
         int CardQuantity { get => PlayerDataManager.Instance.DeckSize; }
+
+        private void Start()
+        {
+            m_usrId.text = PlayerDataManager.Instance.UserID;
+        }
         public void SortFlashcard()
         {
             if (CardQuantity >= 10)
@@ -29,19 +36,6 @@ namespace ASLeitner.Menu
         {
             SceneManager.LoadScene(SceneRefs.InsertRemove);
             Debug.Log("Inserindo/removendo flashcard!"); 
-        }
-
-        public void ShareFlashcard()
-        {
-            if (CardQuantity == 0)
-            {
-                Debug.Log("Numero minimo de flashcards = 1");
-            }
-            else
-            {
-                //SceneManager.LoadScene(SceneRefs.InsertRemove);
-                Debug.Log("Compartilhando flashcard!");
-            }
         }
 
         public void QuitApplication()

@@ -127,6 +127,30 @@ namespace ASLeitner.Managers
                     Debug.Log("Downloading UsersIDs: " + (_progress * 100).ToString() + "%");
                 }));
         }
+
+        private void TryToDownloadAndMergeDeckData(Action<bool> _mergeResult, string _usrID, int _requests = 0)
+        {
+            //Tenta baixar o deck do server
+            StartCoroutine(ServerComs.GetUserDeckAsync(_usrID,
+                (_deckData, _result) =>
+                {
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        AddDeckDataToDict(m_playerDeckDict, _deckData);
+                        _mergeResult(true);
+                    }
+                    else
+                    {
+                        Debug.LogError("Nao foi possivel baixar o deck");
+                        if (++_requests < k_requestsLimit) TryToDownloadAndMergeDeckData(_mergeResult, _usrID, _requests);
+                        else _mergeResult(false);
+                    }
+                },
+                (_progress) =>
+                {
+                    Debug.Log("Downloading deck: " + (_progress * 100).ToString() + "%");
+                }));
+        }
         private void TryToDownloadDeckData(int _requests = 0)
         {
             //Tenta baixar o deck do server
@@ -164,7 +188,16 @@ namespace ASLeitner.Managers
 
             return flashcardDict;
         }
-
+        private void AddDeckDataToDict(Dictionary<string, FlashcardData> _dict, DeckData _deckData)
+        {
+            foreach (FlashcardData flashcard in _deckData.FlashCards)
+            {
+                if (_dict.ContainsKey(flashcard.CardFront))
+                    _dict[flashcard.CardFront] = new FlashcardData(flashcard.CardFront, flashcard.CardBack, flashcard.LearningStage);
+                else
+                    _dict.Add(flashcard.CardFront, flashcard);
+            }
+        }
         private DeckData DictionaryToDeck(Dictionary<string, FlashcardData> _dict)
         {
             DeckData deckData = new DeckData();
@@ -280,6 +313,40 @@ namespace ASLeitner.Managers
         {
             m_playerDeckDict = CreateFlashcardDictionary(m_playerDeck);
 
+        }
+
+        public void MergeDecks(string _usrId, Action<bool> _mergeDeckResultCB)
+        {
+            StartCoroutine(ServerComs.GetUsersIdsAsync(
+                (_usrsIds, _result) =>
+                {
+                    bool usrIdFound = false;
+                    if (_result == UnityWebRequest.Result.Success)
+                    {
+                        if (_usrsIds != null)
+                        {
+                            for (int i = 0; i < _usrsIds.Length; i++)
+                            {
+                                if (_usrsIds[i] == _usrId)
+                                {
+                                    usrIdFound = true;
+                                    TryToDownloadAndMergeDeckData(_mergeDeckResultCB, _usrId);
+                                    break;
+                                }
+                            }
+                        }
+                        if (!usrIdFound)
+                        {
+                            _mergeDeckResultCB(false);
+                        }
+                    }
+                    else
+                        _mergeDeckResultCB(false);
+                },
+                (_progress) =>
+                {
+                    Debug.Log("Downloading UsersIDs: " + (_progress * 100).ToString() + "%");
+                }));
         }
     }
 }
