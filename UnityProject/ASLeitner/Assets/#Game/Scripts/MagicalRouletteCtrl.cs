@@ -91,6 +91,53 @@ namespace ASLeitner
                 flashCardPos = Vec2Uts.RotateVec2(flashCardPos, angleFlashcards);
             }
         }
+        private IEnumerator AnimateRouletteToIndex(int _desiredIndex)
+        {
+            float angleFlashcards = GetAngleBetweenFlashcards();
+            Vector3 currentRotation = transform.rotation.eulerAngles;
+            Vector3 desiredRotation = currentRotation;
+            int indexDiff;
+            int leftIndexDiff;
+            int rightIndexDiff;
+            bool rotateRight;
+
+            if (_desiredIndex > m_highlightedFlashcardIndex)
+            {
+                rightIndexDiff = _desiredIndex - m_highlightedFlashcardIndex;
+                leftIndexDiff = m_flashcards.Count - (_desiredIndex - m_highlightedFlashcardIndex);
+            }
+            else
+            {
+                leftIndexDiff = m_highlightedFlashcardIndex - _desiredIndex;
+                rightIndexDiff = m_flashcards.Count - (m_highlightedFlashcardIndex - _desiredIndex);
+            }
+
+            if (leftIndexDiff < rightIndexDiff)
+            {
+                rotateRight = false;
+                indexDiff = leftIndexDiff;
+            }
+            else
+            {
+                rotateRight = true;
+                indexDiff = rightIndexDiff;
+            }
+
+            if (!rotateRight) angleFlashcards = -angleFlashcards;
+
+            m_highlightedFlashcardIndex = _desiredIndex;
+            desiredRotation.y += angleFlashcards * indexDiff;
+
+            while (currentRotation.y != desiredRotation.y)
+            {
+                currentRotation = Vec3Uts.LerpAndMoveTo(currentRotation, desiredRotation, m_rotationAnimationSpeed.x, m_rotationAnimationSpeed.y, Time.deltaTime);
+                transform.rotation = Quaternion.Euler(currentRotation);
+                yield return null;
+            }
+
+
+            m_isAnimating = false;
+        }
         private IEnumerator AnimateRoulette(bool _rotatingRight)
         {
             float angleFlashcards = GetAngleBetweenFlashcards();
@@ -254,6 +301,19 @@ namespace ASLeitner
             {
                 m_isAnimating = true;
                 StartCoroutine(AnimateFlashcardRotation());
+            }
+        }
+        public void RotateToFlashcard(FlashcardData _flashcardData)
+        {
+            int flashcardIndex;
+            if (!m_isAnimating && m_flashcards.Count > 0)
+            {
+                flashcardIndex = m_flashcards.FindIndex((flashcard) => flashcard.FlashcardData.CardFront == _flashcardData.CardFront && flashcard.isActiveAndEnabled);
+                if (flashcardIndex != -1)
+                {
+                    m_isAnimating = true;
+                    StartCoroutine(AnimateRouletteToIndex(flashcardIndex));
+                }
             }
         }
     }

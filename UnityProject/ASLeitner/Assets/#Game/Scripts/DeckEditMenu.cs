@@ -13,14 +13,17 @@ namespace ASLeitner
     {
         [SerializeField] private MagicalRouletteCtrl m_rouletteCtrl;
         [SerializeField] private GameObject m_inputAbsorver;
+        [SerializeField] private GameObject m_flashcardNotFound;
         [SerializeField] private TMP_InputField m_termInputField;
         [SerializeField] private TMP_InputField m_definitionInputField;
+        [SerializeField] private TMP_InputField m_searchTermField;
 
         private void Start()
         {
             m_rouletteCtrl.InstantiateFlashcards(PlayerDataManager.Instance.PlayerDeckToArray());
             m_termInputField.gameObject.SetActive(false);
             m_definitionInputField.gameObject.SetActive(false);
+            m_flashcardNotFound.gameObject.SetActive(false);
         }
         public void OnFlashcardEdited()
         {
@@ -89,6 +92,21 @@ namespace ASLeitner
                 m_rouletteCtrl.HighlitedFlashcard.SetDefinitionVisibility(false);
                 m_definitionInputField.gameObject.SetActive(true);
                 m_definitionInputField.ActivateInputField();
+            }
+        }
+        public void OnSearchFlashcard()
+        {
+            string term = m_searchTermField.text;
+            FlashcardData flashcard = PlayerDataManager.Instance.GetFlashcard(term);
+
+            if (flashcard != null)
+            {
+                m_rouletteCtrl.RotateToFlashcard(flashcard);
+                m_flashcardNotFound.gameObject.SetActive(false);
+            }
+            else
+            {
+                m_flashcardNotFound.gameObject.SetActive(true);
             }
         }
     }

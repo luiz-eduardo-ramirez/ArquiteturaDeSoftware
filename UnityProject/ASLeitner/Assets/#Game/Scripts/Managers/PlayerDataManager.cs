@@ -233,7 +233,10 @@ namespace ASLeitner.Managers
 
         public FlashcardData GetFlashcard(string _key)
         {            
-            return m_playerDeckDict[_key];
+            if(m_playerDeckDict.ContainsKey(_key))
+                return m_playerDeckDict[_key];
+            else
+                return null;
         }
 
         public void AddNewFlashcard(FlashcardData _flashcard)
