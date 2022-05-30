@@ -46,88 +46,94 @@ namespace ASLeitner.Net
         public static IEnumerator GetUserDeckAsync(string _usrID, Action<DeckData, UnityWebRequest.Result> _onDownloadFinished, Action<float> _onDownloadUpdate)
         {
             DeckData deckData = null;
-            UnityWebRequest getRequest = UnityWebRequest.Get(s_servrUrl + "/" + _usrID);
-            DownloadHandler downloadHan;
-            getRequest.SendWebRequest();
-
-            while (!getRequest.isDone)
+            using (UnityWebRequest getRequest = UnityWebRequest.Get(s_servrUrl + "/" + _usrID))
             {
-                _onDownloadUpdate(getRequest.downloadProgress);
-                yield return null;
-            }
+                DownloadHandler downloadHan;
+                getRequest.SendWebRequest();
 
-            if (getRequest.error != null)
-            {
-                Debug.LogError(getRequest.error);
+                while (!getRequest.isDone)
+                {
+                    _onDownloadUpdate(getRequest.downloadProgress);
+                    yield return null;
+                }
 
-                _onDownloadFinished(deckData, getRequest.result);
-            }
-            else
-            {
-                downloadHan = getRequest.downloadHandler;
-                
-                deckData = JsonUtility.FromJson<PlayerDataGetReponse>(downloadHan.text).Item.deck;
+                if (getRequest.error != null)
+                {
+                    Debug.LogError(getRequest.error);
 
-                _onDownloadFinished(deckData, getRequest.result);
+                    _onDownloadFinished(deckData, getRequest.result);
+                }
+                else
+                {
+                    downloadHan = getRequest.downloadHandler;
+
+                    deckData = JsonUtility.FromJson<PlayerDataGetReponse>(downloadHan.text).Item.deck;
+
+                    _onDownloadFinished(deckData, getRequest.result);
+                }
             }
         }
 
         public static IEnumerator SetUserDeckAsync(string _usrID, DeckData _usrData, Action<UnityWebRequest.Result> _onUploadFinished, Action<float> _onUploadUpdate)
         {
             PlayerData playerData = new PlayerData(_usrID, _usrData);
-            UnityWebRequest setRequest = UnityWebRequest.Put(s_servrUrl, JsonUtility.ToJson(playerData));
-
-            setRequest.SetRequestHeader("Content-Type", "application/json");
-            setRequest.SendWebRequest();
-
-            while (!setRequest.isDone)
+            using (UnityWebRequest setRequest = UnityWebRequest.Put(s_servrUrl, JsonUtility.ToJson(playerData)))
             {
-                _onUploadUpdate(setRequest.uploadProgress);
-                yield return null;
-            }
 
-            if (setRequest.error != null)
-            {
-                Debug.LogError(setRequest.error);
-            }
+                setRequest.SetRequestHeader("Content-Type", "application/json");
+                setRequest.SendWebRequest();
 
-            _onUploadFinished(setRequest.result);
+                while (!setRequest.isDone)
+                {
+                    _onUploadUpdate(setRequest.uploadProgress);
+                    yield return null;
+                }
+
+                if (setRequest.error != null)
+                {
+                    Debug.LogError(setRequest.error);
+                }
+
+                _onUploadFinished(setRequest.result);
+            }
         }
         public static IEnumerator GetUsersIdsAsync(Action<string[], UnityWebRequest.Result> _onDownloadFinished, Action<float> _onDownloadUpdate)
         {
-            UnityWebRequest getRequest = UnityWebRequest.Get(s_servrUrl + "/usrsids");
-            UsrsIdsGetResponse usrsIdsResponse = null;
-            string[] usrsIds = null;
-            DownloadHandler downloadHan;
-            getRequest.SetRequestHeader("Content-Type", "application/json");
-            getRequest.SendWebRequest();
-
-
-
-            while (!getRequest.isDone)
+            using (UnityWebRequest getRequest = UnityWebRequest.Get(s_servrUrl + "/usrsids"))
             {
-                _onDownloadUpdate(getRequest.downloadProgress);
-                yield return null;
-            }
+                UsrsIdsGetResponse usrsIdsResponse = null;
+                string[] usrsIds = null;
+                DownloadHandler downloadHan;
+                getRequest.SetRequestHeader("Content-Type", "application/json");
+                getRequest.SendWebRequest();
 
-            if (getRequest.error != null)
-            {
-                Debug.LogError(getRequest.error);
 
-                _onDownloadFinished(usrsIds, getRequest.result);
-            }
-            else
-            {
-                downloadHan = getRequest.downloadHandler;
 
-                usrsIdsResponse = JsonUtility.FromJson<UsrsIdsGetResponse>(downloadHan.text);
-                usrsIds = new string[usrsIdsResponse.Count];
-                for (int i = 0; i < usrsIdsResponse.Count; i++)
+                while (!getRequest.isDone)
                 {
-                    usrsIds[i] = usrsIdsResponse.Items[i].usrid;
+                    _onDownloadUpdate(getRequest.downloadProgress);
+                    yield return null;
                 }
 
-                _onDownloadFinished(usrsIds, getRequest.result);
+                if (getRequest.error != null)
+                {
+                    Debug.LogError(getRequest.error);
+
+                    _onDownloadFinished(usrsIds, getRequest.result);
+                }
+                else
+                {
+                    downloadHan = getRequest.downloadHandler;
+
+                    usrsIdsResponse = JsonUtility.FromJson<UsrsIdsGetResponse>(downloadHan.text);
+                    usrsIds = new string[usrsIdsResponse.Count];
+                    for (int i = 0; i < usrsIdsResponse.Count; i++)
+                    {
+                        usrsIds[i] = usrsIdsResponse.Items[i].usrid;
+                    }
+
+                    _onDownloadFinished(usrsIds, getRequest.result);
+                }
             }
         }
         public static DeckData GetUsrDeck(MonoBehaviour _coroutineCaller, string _usrID)

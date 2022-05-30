@@ -36,5 +36,13 @@ namespace ASLeitner
             m_definicao.text = _flashcardData.CardBack;
             FlashcardData = _flashcardData;
         }
+        public void SetTermVisibility(bool _setValue) 
+        {
+            m_termo.enabled = _setValue;
+        }
+        public void SetDefinitionVisibility(bool _setValue)
+        {
+            m_definicao.enabled = _setValue;
+        }
     }
 }

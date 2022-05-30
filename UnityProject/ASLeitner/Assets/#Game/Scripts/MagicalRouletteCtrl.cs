@@ -1,4 +1,5 @@
 using ASLeitner.DataStructs;
+using ASLeitner.Managers;
 using Base.Extensions.Utilites;
 using Base.Managers;
 using System;
@@ -25,7 +26,7 @@ namespace ASLeitner
         [Header("O X representa velocidade linear")]
         [Header("O Y representa velocidade da interpolacao")]
         [SerializeField]
-        private Vector2 m_deletetionAnimationSpeed;
+        private Vector2 m_translationAnimationSpeed;
         [SerializeField]
         private float m_flashCardExitHeight;
 
@@ -70,11 +71,16 @@ namespace ASLeitner
             }
             return i + 1;
         }
+        private float GetAngleBetweenFlashcards() { return m_flashcards.Count > 1 ? 360f / m_flashcards.Count : 0; }
         private void AssingFlashcardsPositions()
         {
-            float angleFlashcards = 360 / m_flashcards.Count;
+            float angleFlashcards = GetAngleBetweenFlashcards();
             float c = m_flashcardsSpacing;
-            float m_rouletteRadius = Mathf.Sqrt(Mathf.Pow(c, 2) / (2 - (2* Mathf.Cos(Mathf.Deg2Rad * angleFlashcards))));
+            float m_rouletteRadius;
+
+            if (angleFlashcards == 0) m_rouletteRadius = 0;
+            else m_rouletteRadius = Mathf.Sqrt(Mathf.Pow(c, 2) / (2 - (2* Mathf.Cos(Mathf.Deg2Rad * angleFlashcards))));            
+
             transform.position = Vector3.forward * (m_rouletteRadius + m_distanceFromCam);
 
             Vector2 flashCardPos = new Vector2(0, -m_rouletteRadius);
@@ -85,10 +91,56 @@ namespace ASLeitner
                 flashCardPos = Vec2Uts.RotateVec2(flashCardPos, angleFlashcards);
             }
         }
+        private IEnumerator AnimateRouletteToIndex(int _desiredIndex)
+        {
+            float angleFlashcards = GetAngleBetweenFlashcards();
+            Vector3 currentRotation = transform.rotation.eulerAngles;
+            Vector3 desiredRotation = currentRotation;
+            int indexDiff;
+            int leftIndexDiff;
+            int rightIndexDiff;
+            bool rotateRight;
+
+            if (_desiredIndex > m_highlightedFlashcardIndex)
+            {
+                rightIndexDiff = _desiredIndex - m_highlightedFlashcardIndex;
+                leftIndexDiff = m_flashcards.Count - (_desiredIndex - m_highlightedFlashcardIndex);
+            }
+            else
+            {
+                leftIndexDiff = m_highlightedFlashcardIndex - _desiredIndex;
+                rightIndexDiff = m_flashcards.Count - (m_highlightedFlashcardIndex - _desiredIndex);
+            }
+
+            if (leftIndexDiff < rightIndexDiff)
+            {
+                rotateRight = false;
+                indexDiff = leftIndexDiff;
+            }
+            else
+            {
+                rotateRight = true;
+                indexDiff = rightIndexDiff;
+            }
+
+            if (!rotateRight) angleFlashcards = -angleFlashcards;
+
+            m_highlightedFlashcardIndex = _desiredIndex;
+            desiredRotation.y += angleFlashcards * indexDiff;
+
+            while (currentRotation.y != desiredRotation.y)
+            {
+                currentRotation = Vec3Uts.LerpAndMoveTo(currentRotation, desiredRotation, m_rotationAnimationSpeed.x, m_rotationAnimationSpeed.y, Time.deltaTime);
+                transform.rotation = Quaternion.Euler(currentRotation);
+                yield return null;
+            }
+
+
+            m_isAnimating = false;
+        }
         private IEnumerator AnimateRoulette(bool _rotatingRight)
         {
-            float angleFlashcards = 360 / m_flashcards.Count;
-            m_isAnimating = true;
+            float angleFlashcards = GetAngleBetweenFlashcards();
             Vector3 currentRotation = transform.rotation.eulerAngles;
             Vector3 desiredRotation = currentRotation;
             int indexDiff;
@@ -114,7 +166,6 @@ namespace ASLeitner
         }
         private IEnumerator AnimateFlashcardRotation()
         {
-            m_isAnimating = true;
             HighlitedFlashcard.LookForward = false;
             Vector3 currentRotation = HighlitedFlashcard.transform.rotation.eulerAngles;
             Vector3 desiredRotation = currentRotation;
@@ -135,13 +186,12 @@ namespace ASLeitner
         }
         private IEnumerator AnimateFlashcardRemoved()
         {
-            m_isAnimating = true;
             Vector3 currentPos = HighlitedFlashcard.transform.position;
             Vector3 desiredPos = HighlitedFlashcard.transform.position + new Vector3(0, m_flashCardExitHeight, 0);
 
             while (currentPos.y != desiredPos.y)
             {
-                currentPos = Vec3Uts.LerpAndMoveTo(currentPos, desiredPos, m_deletetionAnimationSpeed.x, m_deletetionAnimationSpeed.y, Time.deltaTime);
+                currentPos = Vec3Uts.LerpAndMoveTo(currentPos, desiredPos, m_translationAnimationSpeed.x, m_translationAnimationSpeed.y, Time.deltaTime);
                 HighlitedFlashcard.transform.position = currentPos;
                 yield return null;
             }
@@ -154,6 +204,43 @@ namespace ASLeitner
             }
             else
                 m_isAnimating = false;
+        }
+
+        private IEnumerator AnimateFlashcardInserted()
+        {
+            Flashcard newFlashcard = Instantiate(m_flashcardPrefab, transform);
+            newFlashcard.LookForward = true;
+            newFlashcard.SetFlashCard(new FlashcardData(PlayerDataManager.Instance.GetAvailableDefaultKey(), "Definicao", LearningStages.Ignorant));
+            m_flashcards.Insert(m_highlightedFlashcardIndex, newFlashcard);
+
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+
+            AssingFlashcardsPositions();
+
+            float angleFlashcards = GetAngleBetweenFlashcards();
+            transform.rotation = Quaternion.Euler(0, angleFlashcards * m_highlightedFlashcardIndex, 0);
+            newFlashcard.transform.position = newFlashcard.transform.position + (Vector3.up * m_flashCardExitHeight);
+
+            Vector3 currentPos = newFlashcard.transform.position;
+            Vector3 desiredPos = newFlashcard.transform.position;
+            desiredPos.y = 0;
+
+            while (currentPos.y != desiredPos.y)
+            {
+                currentPos = Vec3Uts.LerpAndMoveTo(currentPos, desiredPos, m_translationAnimationSpeed.x, m_translationAnimationSpeed.y, Time.deltaTime);
+                HighlitedFlashcard.transform.position = currentPos;
+                yield return null;
+            }
+            
+            m_isAnimating = false;
+        }
+        public void InsertNewFlashcard()
+        {
+            if (!m_isAnimating)
+            {
+                m_isAnimating = true;
+                StartCoroutine(AnimateFlashcardInserted());
+            }
         }
 
         public void InstantiateFlashcards(FlashcardData[] _flashcards)
@@ -170,12 +257,13 @@ namespace ASLeitner
                 newFlashcard.SetFlashCard(_flashcards[i]);
                 m_flashcards.Add(newFlashcard);
             }
-            AssingFlashcardsPositions();
+            if (_flashcards.Length > 0) AssingFlashcardsPositions();
         }
         public void AnimateLeft()
         {
-            if (!m_isAnimating)
+            if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                m_isAnimating = true;
                 if (!HighlitedFlashcard.ShowingTerm)
                 {
                     StartCoroutine(AnimateFlashcardRotation());
@@ -187,8 +275,9 @@ namespace ASLeitner
         }
         public void AnimateRight()
         {
-            if (!m_isAnimating)
+            if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                m_isAnimating = true;
                 if (!HighlitedFlashcard.ShowingTerm)
                 {
                     StartCoroutine(AnimateFlashcardRotation());
@@ -200,16 +289,31 @@ namespace ASLeitner
         }
         public void RemoveHighlightedFlashcard()
         {
-            if (!m_isAnimating)
+            if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                m_isAnimating = true;
                 StartCoroutine(AnimateFlashcardRemoved());
             }
         }
         public void RotateCurrentFlashcard()
         {
-            if (!m_isAnimating)
+            if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                m_isAnimating = true;
                 StartCoroutine(AnimateFlashcardRotation());
+            }
+        }
+        public void RotateToFlashcard(FlashcardData _flashcardData)
+        {
+            int flashcardIndex;
+            if (!m_isAnimating && m_flashcards.Count > 0)
+            {
+                flashcardIndex = m_flashcards.FindIndex((flashcard) => flashcard.FlashcardData.CardFront == _flashcardData.CardFront && flashcard.isActiveAndEnabled);
+                if (flashcardIndex != -1)
+                {
+                    m_isAnimating = true;
+                    StartCoroutine(AnimateRouletteToIndex(flashcardIndex));
+                }
             }
         }
     }
