@@ -6,19 +6,28 @@ namespace ASLeitner.Menu
 {
     public class MainMenu : MonoBehaviour
     {
-        int CardQuantity { get => PlayerDataManager.Instance.PlayerDeck.DeckSize; }
+        int CardQuantity { get => PlayerDataManager.Instance.DeckSize; }
         public void SortFlashcard()
         {
             if (CardQuantity >= 10)
             {
-                SceneManager.LoadScene("Sorting");
+                SceneManager.LoadScene(SceneRefs.Sorting);
                 Debug.Log("Sorteando flashcard!");
+            }
+        }
+
+        public void LearningStage()
+        {
+            if(CardQuantity >= 10)
+            {
+                SceneManager.LoadScene(SceneRefs.LearningStage);
+                Debug.Log("Etapa de aprendizado!");
             }
         }
 
         public void InsertRemoveFlashcard()
         {
-            SceneManager.LoadScene("InsertRemove");
+            SceneManager.LoadScene(SceneRefs.InsertRemove);
             Debug.Log("Inserindo/removendo flashcard!"); 
         }
 
@@ -30,7 +39,7 @@ namespace ASLeitner.Menu
             }
             else
             {
-                SceneManager.LoadScene("Share");
+                //SceneManager.LoadScene(SceneRefs.InsertRemove);
                 Debug.Log("Compartilhando flashcard!");
             }
         }

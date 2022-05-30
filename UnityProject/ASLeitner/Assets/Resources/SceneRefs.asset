@@ -17,3 +17,4 @@ MonoBehaviour:
   m_setup: Setup
   m_share: Share
   m_sorting: Sorting
+  m_learning: LearningStage

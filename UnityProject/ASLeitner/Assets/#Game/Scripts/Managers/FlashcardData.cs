@@ -9,8 +9,19 @@ namespace ASLeitner.DataStructs
     [Serializable]
     public class FlashcardData
     {
-        public string CardFront;
-        public string CardBack;
-        public LearningStages LearningStage;
+        [SerializeField] private string m_cardFront;
+        [SerializeField] private string m_cardBack;
+        [SerializeField] private LearningStages m_learningStage;
+
+        public FlashcardData(string _cardFront, string _cardBack, LearningStages _learningStage)
+        {
+            m_cardFront = _cardFront;
+            m_cardBack = _cardBack;
+            m_learningStage = _learningStage;
+        }
+
+        public string CardFront{ get => m_cardFront; } //max 120 chars 
+        public string CardBack{ get => m_cardBack; } //max 430 chars
+        public LearningStages LearningStage{ get => m_learningStage; }
     }
 }

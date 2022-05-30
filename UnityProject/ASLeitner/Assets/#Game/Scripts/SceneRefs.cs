@@ -19,6 +19,8 @@ namespace ASLeitner
         private string m_share;
         [SerializeField]
         private string m_sorting;
+        [SerializeField]
+        private string m_learning;
 
 
         private static SceneRefs Instance 
@@ -38,5 +40,6 @@ namespace ASLeitner
         public static string Setup { get => Instance.m_setup; }
         public static string Share { get => Instance.m_share; }
         public static string Sorting { get => Instance.m_sorting; }
+        public static string LearningStage { get => Instance.m_learning; }
     }
 }
