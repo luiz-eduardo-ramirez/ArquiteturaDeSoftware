@@ -49,7 +49,7 @@ namespace ASLeitner
         }
         public void OnInsertFlashcard()
         {
-            if (m_rouletteCtrl.IsAnimating) return;
+            if (m_rouletteCtrl.IsAnimating || PlayerDataManager.Instance.DeckSize >= PlayerDataManager.Instance.MaxDeckSize) return;
 
             m_rouletteCtrl.InsertNewFlashcard();
 

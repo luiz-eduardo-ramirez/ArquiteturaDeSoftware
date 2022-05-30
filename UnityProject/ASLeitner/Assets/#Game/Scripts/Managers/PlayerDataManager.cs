@@ -32,12 +32,14 @@ namespace ASLeitner.Managers
         public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
         //private DeckData PlayerDeck { get => m_playerDeck; }
         public int DeckSize { get => m_playerDeckDict.Count; }
+        public int MaxDeckSize { get => k_maxNumOfFlashcards; }
 
         protected override void Awake()
         {
             base.Awake();
 
             Debug.Log("Player data manager foi inicializado");
+            m_playerDeckDict = new Dictionary<string, FlashcardData>();
             CheckUsrRegistry();
             //m_playerDeck = CreateTestDeck();
             //ResetFlashcards();
