@@ -194,6 +194,29 @@ namespace ASLeitner
 
             m_isAnimating = false;
         }
+        private IEnumerator AnimateFlashcardRotationAndRoulette(bool _rotateRight)
+        {
+
+            HighlitedFlashcard.LookForward = false;
+            Vector3 currentRotation = HighlitedFlashcard.transform.rotation.eulerAngles;
+            Vector3 desiredRotation = currentRotation;
+
+            desiredRotation.y += 180;
+
+            m_onFlashcardRotatation.Play();
+
+            while (currentRotation.y != desiredRotation.y)
+            {
+                currentRotation = Vec3Uts.LerpAndMoveTo(currentRotation, desiredRotation, m_rotationAnimationSpeed.x, m_rotationAnimationSpeed.y, Time.deltaTime);
+                HighlitedFlashcard.transform.rotation = Quaternion.Euler(currentRotation);
+                yield return null;
+            }
+
+            HighlitedFlashcard.ShowingTerm = !HighlitedFlashcard.ShowingTerm;
+            HighlitedFlashcard.LookForward = true;
+
+            StartCoroutine(AnimateRoulette(_rotateRight));
+        }
         private IEnumerator AnimateFlashcardRemoved()
         {
             Vector3 currentPos = HighlitedFlashcard.transform.position;
@@ -275,10 +298,7 @@ namespace ASLeitner
             {
                 m_isAnimating = true;
                 if (!HighlitedFlashcard.ShowingTerm)
-                {
-                    StartCoroutine(AnimateFlashcardRotation());
-                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(false)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
-                }
+                    StartCoroutine(AnimateFlashcardRotationAndRoulette(false));
                 else
                     StartCoroutine(AnimateRoulette(false));
             }
@@ -287,12 +307,10 @@ namespace ASLeitner
         {
             if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                Debug.Log("Rotating Right");
                 m_isAnimating = true;
                 if (!HighlitedFlashcard.ShowingTerm)
-                {
-                    StartCoroutine(AnimateFlashcardRotation());
-                    TimersManager.CallAfterConditionIsTrue(() => StartCoroutine(AnimateRoulette(true)), () => (HighlitedFlashcard.ShowingTerm && !m_isAnimating));
-                }
+                    StartCoroutine(AnimateFlashcardRotationAndRoulette(true));
                 else
                     StartCoroutine(AnimateRoulette(true));
             }
@@ -309,6 +327,7 @@ namespace ASLeitner
         {
             if (!m_isAnimating && m_flashcards.Count > 0)
             {
+                Debug.Log("Rotating flashcard");
                 m_isAnimating = true;
                 StartCoroutine(AnimateFlashcardRotation());
             }

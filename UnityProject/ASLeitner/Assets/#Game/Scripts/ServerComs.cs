@@ -40,7 +40,7 @@ namespace ASLeitner.Net
             public int Count;
             public int ScannedCount;
         }
-        private const string s_servrUrl = "https://qc8uyffmda.execute-api.us-east-1.amazonaws.com/items";
+        private const string s_servrUrl = "https://t53dcc739l.execute-api.us-east-1.amazonaws.com/items";
 
 
         public static IEnumerator GetUserDeckAsync(string _usrID, Action<DeckData, UnityWebRequest.Result> _onDownloadFinished, Action<float> _onDownloadUpdate)
