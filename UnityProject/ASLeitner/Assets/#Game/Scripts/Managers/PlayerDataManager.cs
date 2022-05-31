@@ -2,9 +2,11 @@ using ASLeitner.DataStructs;
 using ASLeitner.Net;
 using Base.Extensions.Attributes;
 using Base.Extensions.Patterns;
+using CorazonHeart;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -24,13 +26,28 @@ namespace ASLeitner.Managers
         [ReadOnly]
         private DeckData m_playerDeck;
         private Dictionary<string, FlashcardData> m_playerDeckDict;
+        private string m_indexedUserID;
 
         private const int k_requestsLimit = 4;
         private const int k_maxNumOfFlashcards = 50;
+        private readonly int k_xorMask = 453156;
 
 
-        public string UserID { get => SystemInfo.deviceUniqueIdentifier; }
-        //private DeckData PlayerDeck { get => m_playerDeck; }
+        private string UserID { get => SystemInfo.deviceUniqueIdentifier; }
+        private string IndexedUserID 
+        { 
+            get 
+            {
+                if (!string.IsNullOrEmpty(m_indexedUserID)) return m_indexedUserID;
+                else
+                {
+                    throw new NullReferenceException("O ID indexado de usuario esta nulo!");
+                    return null;
+                }
+            }
+        }
+        private int UserIndex { get => GetUserIndex(IndexedUserID); }
+        public string UserShareID { get => ObfuscateUsrIndex(UserIndex); }
         public int DeckSize { get => m_playerDeckDict.Count; }
         public int MaxDeckSize { get => k_maxNumOfFlashcards; }
 
@@ -47,6 +64,25 @@ namespace ASLeitner.Managers
 
             //if(SceneManager.GetActiveScene().name == SceneRefs.Setup)
             //    SceneManager.LoadScene(SceneRefs.MainMenu);
+        }
+        private int GetUserIndex(string _usrID)
+        {
+            return int.Parse(new Regex(@"\d+(?=_)").Match(_usrID).Value);
+        }
+        private string ObfuscateUsrIndex(int _index)
+        {
+            return new CObfuscation().Obfuscate(UserIndex ^ k_xorMask);
+        }
+        private int DeObfuscateUsrIndex(string _index)
+        {
+            int? dobIndex = new CObfuscation().DeObfuscate(_index);
+            if (dobIndex.HasValue)
+                return (dobIndex.Value ^ k_xorMask);
+            else
+            {
+                throw new Exception("De obfuscate falhou!");
+                return -1;
+            }
         }
 
         // Apagar depois de fazer conexao com servidor
@@ -72,13 +108,12 @@ namespace ASLeitner.Managers
             //{
             //    deckTeste.FlashCards[i] = new FlashcardData("abacateFront" + i, "abacateBack" + i, LearningStages.Acquired);
             //}
-
             return deckTeste;
         }
 
         private void RegisterUserOnServer(int _requests = 0)
         {
-            StartCoroutine(ServerComs.SetUserDeckAsync(UserID, new DeckData(),
+            StartCoroutine(ServerComs.SetUserDeckAsync(IndexedUserID, new DeckData(),
                 (_result) => 
                 {
                     if (_result == UnityWebRequest.Result.Success)
@@ -108,8 +143,9 @@ namespace ASLeitner.Managers
                         {
                             for(int i = 0; i < _usrsIds.Length; i++)
                             {
-                                if (_usrsIds[i] == UserID)
+                                if (_usrsIds[i].Substring(2) == UserID)
                                 {
+                                    m_indexedUserID = _usrsIds[i];
                                     usrIdFound = true;
                                     TryToDownloadDeckData();
                                     break;
@@ -118,6 +154,7 @@ namespace ASLeitner.Managers
                         }
                         if (!usrIdFound)
                         {
+                            m_indexedUserID = _usrsIds.Length + "_" + UserID;
                             RegisterUserOnServer();
                         }
                     }
@@ -154,7 +191,7 @@ namespace ASLeitner.Managers
         private void TryToDownloadDeckData(int _requests = 0)
         {
             //Tenta baixar o deck do server
-            StartCoroutine(ServerComs.GetUserDeckAsync(UserID, 
+            StartCoroutine(ServerComs.GetUserDeckAsync(IndexedUserID, 
                 (_deckData, _result) =>
                 {
                     if (_result == UnityWebRequest.Result.Success)
@@ -288,7 +325,7 @@ namespace ASLeitner.Managers
         {
             m_playerDeck = DictionaryToDeck(m_playerDeckDict);
 
-            StartCoroutine(ServerComs.SetUserDeckAsync(UserID, m_playerDeck,
+            StartCoroutine(ServerComs.SetUserDeckAsync(IndexedUserID, m_playerDeck,
                 (_result) =>
                 {
                     if (_result == UnityWebRequest.Result.Success)
@@ -297,7 +334,7 @@ namespace ASLeitner.Managers
                     }
                     else
                     {
-                        Debug.LogError("Nao foi possivel registrar o usuario");
+                        Debug.LogError("Nao foi possivel registrar o deck");
                         Application.Quit();
                     }
                 },
@@ -320,6 +357,7 @@ namespace ASLeitner.Managers
             StartCoroutine(ServerComs.GetUsersIdsAsync(
                 (_usrsIds, _result) =>
                 {
+                    int usrIndex = DeObfuscateUsrIndex(_usrId);
                     bool usrIdFound = false;
                     if (_result == UnityWebRequest.Result.Success)
                     {
@@ -327,11 +365,12 @@ namespace ASLeitner.Managers
                         {
                             for (int i = 0; i < _usrsIds.Length; i++)
                             {
-                                if (_usrsIds[i] == _usrId)
+                                if (GetUserIndex(_usrsIds[i]) == usrIndex)
                                 {
                                     usrIdFound = true;
-                                    TryToDownloadAndMergeDeckData(_mergeDeckResultCB, _usrId);
+                                    TryToDownloadAndMergeDeckData(_mergeDeckResultCB, _usrsIds[i]);
                                     break;
+                                    
                                 }
                             }
                         }
