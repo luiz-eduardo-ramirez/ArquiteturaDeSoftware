@@ -254,7 +254,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: -7938940595173014245, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -303,8 +303,8 @@ MonoBehaviour:
     w dw nawdnn djnmwej ndn djwij nmdwin nfien diwnmiin wdini diwnm awdawd awdawd
     awdawd awdawd awdawd awdawd awdawd awdawd '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
+  m_sharedMaterial: {fileID: -7938940595173014245, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2
+  m_fontSize: 2.1
   m_fontSizeBase: 5.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -481,7 +481,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: -7938940595173014245, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -526,8 +526,8 @@ MonoBehaviour:
   m_text: Teste para ver quao grande o termo pode ficar e em que ponto ele comeca
     a ficar cringe vou escrever ate o termo ficar inlegivel
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
+  m_sharedMaterial: {fileID: -7938940595173014245, guid: abc2c80b7d5a4f445b7e073b2f73c6ef, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -551,7 +551,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.05
+  m_fontSize: 2.1
   m_fontSizeBase: 5.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
