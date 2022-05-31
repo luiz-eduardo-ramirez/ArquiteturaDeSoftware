@@ -29,6 +29,8 @@ namespace ASLeitner
         private Vector2 m_translationAnimationSpeed;
         [SerializeField]
         private float m_flashCardExitHeight;
+        [SerializeField]
+        private AudioSource m_onRouletteRotatation;
 
         private List<Flashcard> m_flashcards;
         private bool m_isAnimating;
@@ -125,6 +127,8 @@ namespace ASLeitner
 
             if (!rotateRight) angleFlashcards = -angleFlashcards;
 
+            m_onRouletteRotatation.Play();
+
             m_highlightedFlashcardIndex = _desiredIndex;
             desiredRotation.y += angleFlashcards * indexDiff;
 
@@ -151,6 +155,8 @@ namespace ASLeitner
                 indexDiff = DecrementFlashcardIndex();
 
             if (!_rotatingRight) angleFlashcards = -angleFlashcards;
+
+            m_onRouletteRotatation.Play();
 
             desiredRotation.y += angleFlashcards * indexDiff;
 
