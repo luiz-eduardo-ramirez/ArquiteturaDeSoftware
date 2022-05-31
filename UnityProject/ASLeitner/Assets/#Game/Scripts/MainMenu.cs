@@ -12,7 +12,7 @@ namespace ASLeitner.Menu
 
         private void Start()
         {
-            m_usrId.text = PlayerDataManager.Instance.UserID;
+            m_usrId.text = PlayerDataManager.Instance.UserShareID;
         }
         public void SortFlashcard()
         {
