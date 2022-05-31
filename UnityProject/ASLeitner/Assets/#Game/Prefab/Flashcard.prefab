@@ -328,7 +328,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.1
+  m_fontSize: 2
   m_fontSizeBase: 5.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -423,6 +423,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_termo: {fileID: 6280173916885797969}
   m_definicao: {fileID: 6280173915858582424}
+  m_ignoranceColor: {r: 0.28235295, g: 0, b: 0, a: 1}
+  m_superficialColor: {r: 0.28235295, g: 0.28235295, b: 0, a: 1}
+  m_acquiredColor: {r: 0, g: 0.28235295, b: 0, a: 1}
+  m_rendererBack: {fileID: 2793286825990926240}
+  m_rendererFront: {fileID: 6280173915827637858}
 --- !u!1 &6280173916885797971
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,7 +556,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.1
+  m_fontSize: 2
   m_fontSizeBase: 5.4
   m_fontWeight: 400
   m_enableAutoSizing: 1
