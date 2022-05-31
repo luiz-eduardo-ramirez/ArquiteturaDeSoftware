@@ -73,16 +73,13 @@ namespace ASLeitner.Managers
         {
             return new CObfuscation().Obfuscate(UserIndex ^ k_xorMask);
         }
-        private int DeObfuscateUsrIndex(string _index)
+        private int? DeObfuscateUsrIndex(string _index)
         {
             int? dobIndex = new CObfuscation().DeObfuscate(_index);
             if (dobIndex.HasValue)
                 return (dobIndex.Value ^ k_xorMask);
             else
-            {
-                throw new Exception("De obfuscate falhou!");
-                return -1;
-            }
+                return null;
         }
 
         // Apagar depois de fazer conexao com servidor
@@ -354,10 +351,12 @@ namespace ASLeitner.Managers
 
         public void MergeDecks(string _usrId, Action<bool> _mergeDeckResultCB)
         {
+            int? usrIndex = DeObfuscateUsrIndex(_usrId);
+            if (!usrIndex.HasValue) { _mergeDeckResultCB(false); return; }
             StartCoroutine(ServerComs.GetUsersIdsAsync(
                 (_usrsIds, _result) =>
                 {
-                    int usrIndex = DeObfuscateUsrIndex(_usrId);
+                    
                     bool usrIdFound = false;
                     if (_result == UnityWebRequest.Result.Success)
                     {
@@ -365,7 +364,7 @@ namespace ASLeitner.Managers
                         {
                             for (int i = 0; i < _usrsIds.Length; i++)
                             {
-                                if (GetUserIndex(_usrsIds[i]) == usrIndex)
+                                if (GetUserIndex(_usrsIds[i]) == usrIndex.Value)
                                 {
                                     usrIdFound = true;
                                     TryToDownloadAndMergeDeckData(_mergeDeckResultCB, _usrsIds[i]);

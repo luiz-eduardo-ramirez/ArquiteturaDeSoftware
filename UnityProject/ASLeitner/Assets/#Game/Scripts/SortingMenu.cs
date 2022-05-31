@@ -77,5 +77,10 @@ namespace ASLeitner
                 Debug.Log("Menu adquirido inicializado");
             }
         }
+
+        public void ReturnToMainMenu()
+        {
+            SceneManager.LoadScene(SceneRefs.MainMenu);
+        }
     }
 }
