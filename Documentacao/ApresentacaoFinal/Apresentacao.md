@@ -1,4 +1,47 @@
-## 3 Modularização do Projeto
+
+# Leitner - Projeto de Arquitetura de Software
+
+## 1. Grupo
+### 1.1 Integrantes: 
+    
+- Arthur Naves Pedroso - Integrador de sistemas & Arquiteto de sistemas
+- Caio Henrique Portella - Guru da linguagem
+- Luiz Eduardo Ramirez - Gerente do grupo
+- Mauricio Macedo Villarnobo - Testador
+
+---
+
+## 2. Ferramentas
+### 2.1 Desenvolvimento de software:
+<img src="unity.jpeg" alt="drawing" width="250"/>
+
+- **Vantagens:** 
+  1. Facilidade na distribuição da aplicação para múltiplas plataformas;
+  2. Editor _potente_ que dá amplo suporte para assets 2D e 3D;
+- **Desvantagens:** O motor da Unity é muito grande, o que resulta em executáveis com tamanhos excessivos;
+
+<br/><br/>
+
+<img float="left" src="aws.jpeg" alt="awp" width="150"/> 
+<img style="float: right"src="awsEtapas.jpeg" alt="backend" width="450"/>
+
+<br/><br/>
+
+- Vantagens: 
+  1. Serverless;
+  2. Automaticamente escalonável;
+  3. _Muito_ simples de utilizar;
+- Desvantagens: Torna-se um custo após certo período;
+<br></br>
+
+- Ferramentas organizacionais:
+ ---print do Git e do Trello---
+
+2.2 Como elas modificaram a arquitetura do projeto:
+
+---
+
+## 3 Modularização do Software
 
 ### 1. MonoSinglenton
 
