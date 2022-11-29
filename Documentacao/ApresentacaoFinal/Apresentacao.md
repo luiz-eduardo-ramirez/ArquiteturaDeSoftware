@@ -4,15 +4,27 @@
 ## 1. Grupo
 ### 1.1 Integrantes: 
     
-- Arthur Naves Pedroso - Integrador de sistemas & Arquiteto de sistemas
-- Caio Henrique Portella - Guru da linguagem
-- Luiz Eduardo Ramirez - Gerente do grupo
-- Mauricio Macedo Villarnobo - Testador
+- Arthur Naves Pedroso
+- Caio Henrique Portella
+- Luiz Eduardo Ramirez
+- Mauricio Macedo Villarnobo
+
+## 2. Requisitos
+1. carregar um conjunto contendo 10 flashcards, pelo menos;
+2. virar um flascard a cada solicitação do usuário;
+3. passar para outro flashcard a pedido do usuário;
+4. sortear um flashcard, quando o usuário desejar;
+5. mostrar quantos flashcards o usuário corretamente se lembrou;
+6. suportar a inserção e remoção de flashcards;
+7. ser executado em desktops e celulares;
+8. permitir que um usuário troque flashcards com outro usuário;
+9. a aplicação deverá “animar” um flashcard sempre que ele for virado;
+10. basear-se na proposta de Leitner1 quando do sorteio de flashcards.
 
 ---
 
-## 2. Ferramentas
-### 2.1 Desenvolvimento de software:
+## 3. Ferramentas
+### 3.1 Desenvolvimento de software:
 <img src="unity.jpeg" alt="drawing" width="250"/>
 
 - **Vantagens:** 
@@ -35,13 +47,15 @@
 <br></br>
 
 - Ferramentas organizacionais:
- ---print do Git e do Trello---
 
-2.2 Como elas modificaram a arquitetura do projeto:
+<img float="left" src="trelloLogo.png" alt="awp" width="300"/> 
+<img float="right" src="githubIcon.png" alt="awp" width="300"/> 
+<img float="left" src="ExemploTrello.png" alt="awp" width="900"/> 
+<img float="left" src="prs.png" alt="awp" width="900"/> 
 
 ---
 
-## 3 Modularização do Software
+## 4 Software
 
 ### 1. MonoSinglenton
 
